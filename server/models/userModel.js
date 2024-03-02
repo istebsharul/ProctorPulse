@@ -59,6 +59,7 @@ userSchema.pre("save", async function (next){
     if(!this.isModified("password")){
         next(); 
     }
+    this.modified_datetime = Date.now()
 
     this.password = await bcrypt.hash(this.password,10); //10 determines the complexity of hash calculation
 
