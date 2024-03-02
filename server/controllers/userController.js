@@ -1,55 +1,66 @@
-const ErrorHandler = require("../utils/errorHandlers");
-const asyncErrors = require("../middleware/AsyncErrors");
-const User = require("../models/userModel");
-const sendToken = require("../utils/JWTtoken");
+const ApiResponse = require('../utils/api/apiResponse');
+const asyncErrors = require('../middleware/AsyncErrors');
+const User = require('../models/user.models');
+const sendToken = require('../utils/JWTtoken');
+const logger = require('../utils/logger');
 // const sendMail = require("../utils/sendEmail");
 // const crypto = require("crypto")
 // const cloudinary = require("cloudinary");
 
-
-exports.registerUser = asyncErrors(async (req,res,next) =>{
-    //the user is trying to upload an image through an api call. It's present in the users req.body.avatar. The below func is used to upload the image in the cloudinary. The 2nd parameter is specifying folder and other things in the cloudinary. After successful uploading its returning an object with some member variables like (public_id, secure_url)
-    // const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
-    //     folder: "avatars",
-    //     width: 150,
-    //     crop: "scale",
-    //   });
-    
-    const {name, email , password} = req.body;
-    //console.log()
+/**
+ * Registers a new user.
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @param {Function} next - The next middleware function in the chain.
+ * @returns {Promise<void>} - A Promise that resolves after the user is registered.
+ */
+exports.registerUser = asyncErrors(async (req, res, next) => {
+    const { name, email, password } = req.body;
+    logger.info(`Name: ${name}\n Email: ${email}\n Password: ${password}`)
     const user = await User.create({
-        name, email, password,
-        avatar:{
-            public_id: "myCloud.public_id",
-            url: "myCloud.secure_url",
-        }
+        name,
+        email,
+        password,
     });
-     
-    // Generate a JWT token for the user and store it in the cookie
-    sendToken(user,201,res)
+    logger.info("Hello")
+    logger.info(`User: ${user}`)
+    sendToken(user, 201, res);
 });
 
-//login user
-exports.loginUser = asyncErrors(async (req,res,next) =>{
+/**
+ * Authenticates a user and generates an authentication token.
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @param {Function} next - The next middleware function in the chain.
+ * @returns {Promise<void>} - A Promise that resolves after the user is authenticated.
+ */
+exports.loginUser = asyncErrors(async (req, res, next) => {
+    const { email, password } = req.body;
 
-    const {email, password} = req.body
-    
-    //Check if email and password are provided
-    if(!email || !password) return next(new ErrorHandler("Please enter your email and password",400))
+    logger.debug('Starting login process...');
 
+    if (!email || !password) {
+        logger.error('Validation error: Please enter your email and password');
+        return next(
+            new ApiResponse(400, null, 'Please enter your email and password')
+        );
+    }
 
-    //The select("+password") part is used to include the password field (which is usually excluded by default) so that it can be used for password comparison.
-    const user = await User.findOne({email}).select("+password")
-    
+    logger.debug(`Querying database for user with email: ${email}`);
+    const user = await User.findOne({ email }).select('+password');
 
-    //If no user is found, return an error
-    if(!user) return next(new ErrorHandler("Invalid email or password",401));
+    if (!user) {
+        logger.error(`No user found with email: ${email}`);
+        return next(new ApiResponse(401, null, 'Invalid email or password'));
+    }
 
-    const passwordMatched = await user.comparePassword(password)
+    const passwordMatched = await user.comparePassword(password);
 
-    if(!passwordMatched) return next(new ErrorHandler("Invalid email or password",401));
-    
-    // Generate a JWT token for the user and store it in the cookie
-    sendToken(user,200,res)
+    if (!passwordMatched) {
+        logger.error(`Authentication failed for user with email: ${email}`);
+        return next(new ApiResponse(401, null, 'Invalid email or password'));
+    }
 
-})
+    logger.info(`User with email ${email} logged in successfully`);
+    sendToken(user, 200, res);
+});
