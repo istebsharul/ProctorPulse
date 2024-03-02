@@ -7,7 +7,12 @@ const logger = require("../utils/logger")
 
 const asyncErrors = (requestHandler) => {
     return (req, res, next) => {
-        Promise.resolve(requestHandler(req, res, next)).catch(next);
+        try {
+            Promise.resolve(requestHandler(req, res, next)).catch(next);
+        } catch (error) {
+            logger.error(error)
+            next(error);
+        }
     };
 };
 

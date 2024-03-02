@@ -118,5 +118,6 @@ dist
 .pnp.*
 
 .prettierrc
+PersonalTests
 
 # End of https://mrkandreev.name/snippets/gitignore-generator/#Node
