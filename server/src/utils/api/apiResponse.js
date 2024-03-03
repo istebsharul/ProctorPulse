@@ -5,12 +5,12 @@
  * @param {string} [message="Success"] - The message included in the response (optional).
  */
 class ApiResponse {
-    constructor(statusCode, data, message = "Success"){
-        this.statusCode = statusCode
-        this.data = data
-        this.message = message
-        this.success = statusCode < 400
+    constructor(statusCode, data, message = 'Success') {
+        this.statusCode = statusCode;
+        this.data = data;
+        this.message = message;
+        this.success = statusCode < 400;
     }
 }
 
-module.exports = ApiResponse
+module.exports = ApiResponse;

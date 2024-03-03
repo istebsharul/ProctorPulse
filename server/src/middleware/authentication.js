@@ -1,7 +1,7 @@
-const jwt = require("jsonwebtoken");
-const ErrorHandler = require("../utils/errorHandlers");
-const AsyncErrors = require("./AsyncErrors");
-const User = require("../models/user.models");
+const jwt = require('jsonwebtoken');
+const ErrorHandler = require('../utils/errorHandlers');
+const AsyncErrors = require('./AsyncErrors');
+const User = require('../models/user.models');
 
 /**
  * Middleware to check if the user is authenticated.
@@ -12,14 +12,14 @@ const User = require("../models/user.models");
  * @returns {Promise<void>} - A promise that resolves if the user is authenticated.
  */
 exports.isAuthenticatedUser = AsyncErrors(async (req, res, next) => {
-  const { token } = req.cookies;
+    const { token } = req.cookies;
 
-  if (!token) return next(new ErrorHandler("Please login to access this", 401));
+    if (!token)
+        return next(new ErrorHandler('Please login to access this', 401));
 
-  const decodedData = jwt.verify(token, process.env.JWT_SECRET);
+    const decodedData = jwt.verify(token, process.env.JWT_SECRET);
 
-  req.user = await User.findById(decodedData.id); //req.user is any js object consisting of all details of an user
+    req.user = await User.findById(decodedData.id); //req.user is any js object consisting of all details of an user
 
-  next();
+    next();
 });
-
