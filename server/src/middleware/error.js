@@ -1,5 +1,5 @@
 const ErrorHandler = require('../utils/errorHandlers');
-const logger = require('../utils/logger')
+const logger = require('../utils/logger');
 
 /**
  * Middleware to handle errors and send appropriate error responses.
@@ -16,26 +16,26 @@ authentication = (err, req, res, next) => {
     //mongodb id error.Change in  format or length of id will result in this king of error
     if (err.name == 'CastError') {
         const message = `Resource not found. Invalid: ${err.path}`;
-        logger.error(message)
+        logger.error(message);
         err = new ErrorHandler(message, 400);
     }
 
     //mongodb duplicate key error (for unique fields)
     if (err.code == 11000) {
         const message = `Duplicate ${Object.keys(err.keyValue)} entered`;
-        logger.error(message)
+        logger.error(message);
         err = new ErrorHandler(message, 400);
     }
 
     if (err.name == 'jsonWebTokenError') {
         const message = `Json web token is invalid . Try again`;
-        logger.error(message)
+        logger.error(message);
         err = new ErrorHandler(message, 400);
     }
 
     if (err.name == 'TokenExpiredError') {
         const message = `Json web token is invalid . Try again`;
-        logger.error(message)
+        logger.error(message);
         err = new ErrorHandler(message, 400);
     }
 
@@ -45,4 +45,4 @@ authentication = (err, req, res, next) => {
     });
 };
 
-module.exports = authentication
+module.exports = authentication;

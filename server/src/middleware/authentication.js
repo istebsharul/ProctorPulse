@@ -3,7 +3,6 @@ const ErrorHandler = require('../utils/errorHandlers');
 const AsyncErrors = require('./AsyncErrors');
 const User = require('../models/user.models');
 
-
 /**
  * Middleware to check if the user is authenticated.
  * Verifies the JWT token in the request cookies and sets the authenticated user in the request object.
@@ -12,7 +11,7 @@ const User = require('../models/user.models');
  * @param {import('express').NextFunction} next - The Express next middleware function.
  * @returns {Promise<void>} - A promise that resolves if the user is authenticated.
  */
-exports.isAuthenticatiedUser = AsyncErrors(async (req, res, next) => {
+exports.isAuthenticatedUser = AsyncErrors(async (req, res, next) => {
     const { token } = req.cookies;
 
     if (!token)

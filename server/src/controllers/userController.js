@@ -1,11 +1,11 @@
 const ApiResponse = require('../utils/api/apiResponse');
-const ErrorHandler = require("../utils/errorHandlers");
+const ErrorHandler = require('../utils/errorHandlers');
 const asyncErrors = require('../middleware/AsyncErrors');
 const User = require('../models/user.models');
 const sendToken = require('../utils/JWTtoken');
 const logger = require('../utils/logger');
-const sendMail = require("../utils/sendEmail");
-const crypto = require("crypto")
+const sendMail = require('../utils/sendEmail');
+const crypto = require('crypto');
 // const cloudinary = require("cloudinary");
 
 /**
@@ -17,14 +17,14 @@ const crypto = require("crypto")
  */
 exports.registerUser = asyncErrors(async (req, res, next) => {
     const { name, email, password } = req.body;
-    logger.info(`Name: ${name}\n Email: ${email}\n Password: ${password}`)
+    logger.info(`Name: ${name}\n Email: ${email}\n Password: ${password}`);
     const user = await User.create({
         name,
         email,
         password,
     });
-    logger.info("Hello")
-    logger.info(`User: ${user}`)
+    logger.info('Hello');
+    logger.info(`User: ${user}`);
     sendToken(user, 201, res);
 });
 
@@ -66,95 +66,136 @@ exports.loginUser = asyncErrors(async (req, res, next) => {
     sendToken(user, 200, res);
 });
 
-
 //forgot password
-exports.forgotPassword = asyncErrors(async (req,res,next) =>{
+exports.forgotPassword = asyncErrors(async (req, res, next) => {
+    const user = await User.findOne({ email: req.body.email });
 
-    const user  = await User.findOne({email : req.body.email})
+    if (!user) return next(new ErrorHandler('User not found', 404));
 
-    if(!user) return next(new ErrorHandler("User not found",404))
+    const resetToken = user.getResetPasswordToken(); //defined models/userModel
 
-
-    const resetToken = user.getResetPasswordToken() //defined models/userModel
-
-    await user.save({validateBeforeSave : false}) //in getResetPasswordtoken() we are changing some variables of user, those are needed to be updated in the database 
+    await user.save({ validateBeforeSave: false }); //in getResetPasswordtoken() we are changing some variables of user, those are needed to be updated in the database
 
     const resetPasswordUrl = `${req.protocol}://${req.get(
-        "host"
-      )}/password/reset/${resetToken}`;
+        'host'
+    )}/password/reset/${resetToken}`;
 
-    const message = `Follow the url to reset your password : \n\n ${resetPasswordUrl} \n\n If u haven't requested it , ignore it `
+    const message = `Follow the url to reset your password : \n\n ${resetPasswordUrl} \n\n If u haven't requested it , ignore it `;
 
-   try {
-    //defined in utils/sendEmail
-    await sendMail({
-        email : user.email,
-        subject : `Password Recovery`,
-        message
+    try {
+        //defined in utils/sendEmail
+        await sendMail({
+            email: user.email,
+            subject: `Password Recovery`,
+            message,
+        });
+        res.status(201).json({
+            success: true,
+            message: `mail sent to ${user.email} successfully`,
+        });
+    } catch (error) {
+        //in getResetPasswordtoken() we were changing some variables of user, those were also  updated in the database on failure/success they need to be assigned their original value and update the database
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpire = undefined;
 
-    })
-    res.status(201).json({
-        success: true,
-        message : `mail sent to ${user.email} successfully`
-    })
-    
-   } catch (error) {
-    //in getResetPasswordtoken() we were changing some variables of user, those were also  updated in the database on failure/success they need to be assigned their original value and update the database
-    user.resetPasswordToken = undefined
-    user.resetPasswordExpire = undefined
+        await user.save({ validateBeforeSave: false });
 
-    await user.save({validateBeforeSave : false})
-
-    return next(new ErrorHandler(error.message,500))
-    
-   }
-})
+        return next(new ErrorHandler(error.message, 500));
+    }
+});
 
 //reset password
-exports.resetPassword = asyncErrors(async (req,res,next) =>{
-
+exports.resetPassword = asyncErrors(async (req, res, next) => {
     //console.log(req.params.token)
-    
-    resetPasswordToken = crypto.createHash("sha256").update(req.params.token).digest("hex")
 
+    resetPasswordToken = crypto
+        .createHash('sha256')
+        .update(req.params.token)
+        .digest('hex');
 
+    const user = await User.findOne({
+        resetPasswordToken,
+        resetPasswordExpire: { $gt: Date.now() },
+    });
 
-    const user  = await User.findOne({
-        resetPasswordToken, 
-        resetPasswordExpire: { $gt: Date.now() }
-    })
+    if (!user)
+        return next(
+            new ErrorHandler(
+                'Reset password token is invalid or has expired',
+                404
+            )
+        );
 
-    if(!user) return next(new ErrorHandler("Reset password token is invalid or has expired", 404))
-   
-    if(req.body.password!=req.body.confirmPassword) return next(new ErrorHandler("Password doesn't match", 400))
+    if (req.body.password != req.body.confirmPassword)
+        return next(new ErrorHandler("Password doesn't match", 400));
 
+    user.password = req.body.password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
 
-    user.password = req.body.password
-    user.resetPasswordToken = undefined
-    user.resetPasswordExpire = undefined
+    await user.save();
+    sendToken(user, 200, res); // store cookies
+});
 
+//update password after log in
+exports.updatePassword = asyncErrors(async (req, res, next) => {
+    const user = await User.findById(req.user._id).select('+password');
 
-    await user.save()
-    sendToken(user,200,res) // store cookies
-})
+    const passwordMatched = await user.comparePassword(req.body.password);
 
+    if (!passwordMatched) return next(new ErrorHandler('Wrong Password', 401));
 
+    if (req.body.newPassword != req.body.confirmPassword)
+        return next(new ErrorHandler("Password doesn't match"));
 
+    user.password = req.body.newPassword;
 
+    await user.save();
+    sendToken(user, 200, res); // store cookies
+});
 
-//update password after log in 
-exports.updatePassword = asyncErrors(async(req,res,next) =>{
-    
-    const user = await User.findById(req.user._id).select("+password")
-    
-    const passwordMatched = await user.comparePassword(req.body.password)
-    
-    if(!passwordMatched) return next(new ErrorHandler("Wrong Password",401));
-   
-    if(req.body.newPassword != req.body.confirmPassword) return next(new ErrorHandler("Password doesn't match"))
-    
-    user.password = req.body.newPassword
+exports.userProfile = asyncErrors(async (req, res, next) => {
+    let username = req.params.username;
 
-    await user.save()
-    sendToken(user,200,res) // store cookies
-})
+    // Find the user by username
+    const user = await User.findOne({ name: username });
+
+    // If no user is found, pass an error to the error handling middleware
+    if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+    }
+
+    // If user is found, return user profile
+    res.status(200).json({ success: true, user });
+});
+
+exports.updateProfile = asyncErrors(async (req, res, next) => {
+    const { name, email } = req.body;
+
+    // Check if name and email are provided
+    if (!name || !email) {
+        return next(
+            new ErrorHandler('Please provide your name and email', 400)
+        );
+    }
+
+    // console.log({req.user._id})
+    // Find the user by their email
+    const user = await User.findById(req.user.id);
+    // console.log(req.user.id);
+
+    //If no user is found, return an error
+    if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Update user's name and email with new values
+    user.name = name;
+    user.email = email;
+
+    // Saving the user to the database
+    await user.save();
+
+    // Return a success response
+    res.status(200).json({ message: 'Profile updated successfully', user });
+});
