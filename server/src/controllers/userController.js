@@ -62,3 +62,48 @@ exports.loginUser = asyncErrors(async (req, res, next) => {
     logger.info(`User with email ${email} logged in successfully`);
     sendToken(user, 200, res);
 });
+
+
+exports.userProfile = asyncErrors(async (req, res, next) => {
+    let username = req.params.username;
+  
+    // Find the user by username
+    const user = await User.findOne({ name: username });
+  
+    // If no user is found, pass an error to the error handling middleware
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+  
+    // If user is found, return user profile
+    res.status(200).json({ success: true, user });
+  });
+  
+  exports.updateProfile = asyncErrors(async (req, res, next) => {
+    const { name, email } = req.body;
+  
+    // Check if name and email are provided
+    if (!name || !email) {
+      return next(new ErrorHandler("Please provide your name and email", 400));
+    }
+  
+    // console.log({req.user._id})
+    // Find the user by their email
+    const user = await User.findById(req.user.id);
+    // console.log(req.user.id);
+  
+    //If no user is found, return an error
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+  
+    // Update user's name and email with new values
+    user.name = name;
+    user.email = email;
+  
+    // Saving the user to the database
+    await user.save();
+  
+    // Return a success response
+    res.status(200).json({ message: "Profile updated successfully", user });
+  });

@@ -1,4 +1,4 @@
-const logger = require("../utils/logger")
+const logger = require("../utils/logger");
 
 /**
  * Creates an instance of ErrorHandler.
@@ -7,12 +7,12 @@ const logger = require("../utils/logger")
  */
 
 class ErrorHandler extends Error {
-    constructor(message, statusCode) {
-        super(message);
-        this.statusCode = statusCode;
-        
-        Error.captureStackTrace(this, this.constructor);
-    }
+  constructor(message, statusCode) {
+    super(message);
+    this.statusCode = statusCode;
+
+    Error.captureStackTrace(this, this.constructor);
+  }
 }
 
 module.exports = ErrorHandler;
