@@ -1,6 +1,14 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+// Function to calculate expiry date 30 days after creation
+const calculateExpiryDate = () => {
+    const currentDate = new Date();
+    const expiryDate = new Date(currentDate);
+    expiryDate.setDate(expiryDate.getDate() + 30); // Adding 30 days
+    return expiryDate;
+};
+
 const testSchema = new Schema(
     {
         name: {
@@ -19,7 +27,11 @@ const testSchema = new Schema(
             type: Number,
             required: true,
         },
-        questions: [{ type: Schema.Types.ObjectId, ref: 'Question' }], // Reference to Question model
+        expiryDate: {
+            type: Date,
+            default: calculateExpiryDate, // Default value set to 30 days after creation
+        },
+        questions: [{ type: Schema.Types.ObjectId, ref: 'Question' }],
         users: [
             {
                 type: Schema.Types.ObjectId,
