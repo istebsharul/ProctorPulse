@@ -84,9 +84,6 @@ userSchema.methods.getResetPasswordToken = function() {
     //This line generates a random sequence of bytes (length: 20) and then converts it into a hexadecimal string. This token will serve as the unique identifier for the password reset request.
     const resetToken = crypto.randomBytes(20).toString("hex")
 
-    
-    
-
     //resetToken is hashed using the SHA-256 algorithm. The resulting hash is stored in the resetPasswordToken field of the user's document in the database. Storing the hash rather than the original token adds an extra layer of security.The digest function is used to compute the final hash value after feeding the input data into a hash function
     this.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex")
 
