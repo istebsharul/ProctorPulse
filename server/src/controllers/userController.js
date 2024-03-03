@@ -70,7 +70,10 @@ exports.loginUser = asyncErrors(async (req, res, next) => {
 exports.forgotPassword = asyncErrors(async (req, res, next) => {
     const user = await User.findOne({ email: req.body.email });
 
-    if (!user) return next(new ErrorHandler('User not found', 404));
+    if (!user) {
+        logger.error('User not found');
+        return next(new ErrorHandler('User not found', 404));
+    }
 
     const resetToken = user.getResetPasswordToken(); //defined models/userModel
 
@@ -89,11 +92,13 @@ exports.forgotPassword = asyncErrors(async (req, res, next) => {
             subject: `Password Recovery`,
             message,
         });
+        logger.info(`Email sent successfully to: ${user.email}`);
         res.status(201).json({
             success: true,
             message: `mail sent to ${user.email} successfully`,
         });
     } catch (error) {
+        logger.error(`Error sending email: ${error.message}`);
         //in getResetPasswordtoken() we were changing some variables of user, those were also  updated in the database on failure/success they need to be assigned their original value and update the database
         user.resetPasswordToken = undefined;
         user.resetPasswordExpire = undefined;
@@ -107,33 +112,49 @@ exports.forgotPassword = asyncErrors(async (req, res, next) => {
 //reset password
 exports.resetPassword = asyncErrors(async (req, res, next) => {
     //console.log(req.params.token)
+    logger.info(`Reset password token received: ${req.params.token}`);
 
+    // Hash the reset password token
     resetPasswordToken = crypto
         .createHash('sha256')
         .update(req.params.token)
         .digest('hex');
 
+    // Find the user with the hashed reset password token and a valid expiry date
     const user = await User.findOne({
         resetPasswordToken,
         resetPasswordExpire: { $gt: Date.now() },
     });
 
-    if (!user)
+    // If no user is found, log an error
+    if (!user) {
+        logger.error('Reset password token is invalid or has expired');
         return next(
             new ErrorHandler(
                 'Reset password token is invalid or has expired',
                 404
             )
         );
+    }
 
-    if (req.body.password != req.body.confirmPassword)
+    // If passwords don't match, log an error
+    if (req.body.password != req.body.confirmPassword) {
+        logger.error("Password doesn't match");
         return next(new ErrorHandler("Password doesn't match", 400));
+    }
 
+    // Update user's password, resetPasswordToken, and resetPasswordExpire fields
     user.password = req.body.password;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
 
+    // Save the updated user
     await user.save();
+
+    // Log success message
+    logger.info('Password reset successfully');
+
+    // Send token and store cookies
     sendToken(user, 200, res); // store cookies
 });
 
@@ -143,14 +164,21 @@ exports.updatePassword = asyncErrors(async (req, res, next) => {
 
     const passwordMatched = await user.comparePassword(req.body.password);
 
-    if (!passwordMatched) return next(new ErrorHandler('Wrong Password', 401));
+    if (!passwordMatched) {
+        logger.error('Wrong password provided');
+        return next(new ErrorHandler('Wrong Password', 401));
+    }
 
-    if (req.body.newPassword != req.body.confirmPassword)
+    if (req.body.newPassword != req.body.confirmPassword) {
+        logger.error("New password and confirm password don't match");
         return next(new ErrorHandler("Password doesn't match"));
+    }
 
     user.password = req.body.newPassword;
 
     await user.save();
+
+    logger.info('Password updated successfully');
     sendToken(user, 200, res); // store cookies
 });
 
@@ -162,8 +190,12 @@ exports.userProfile = asyncErrors(async (req, res, next) => {
 
     // If no user is found, pass an error to the error handling middleware
     if (!user) {
+        logger.error('User not found');
         return res.status(404).json({ message: 'User not found' });
     }
+
+    // If user is found, log an info message
+    logger.info(`User profile retrieved for username: ${username}`);
 
     // If user is found, return user profile
     res.status(200).json({ success: true, user });
@@ -186,6 +218,7 @@ exports.updateProfile = asyncErrors(async (req, res, next) => {
 
     //If no user is found, return an error
     if (!user) {
+        logger.error('User not found');
         return res.status(404).json({ message: 'User not found' });
     }
 
@@ -195,6 +228,7 @@ exports.updateProfile = asyncErrors(async (req, res, next) => {
 
     // Saving the user to the database
     await user.save();
+    logger.info('Profile updated successfully');
 
     // Return a success response
     res.status(200).json({ message: 'Profile updated successfully', user });
