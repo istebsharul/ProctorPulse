@@ -16,13 +16,11 @@ const logger = require('../utils/logger');
  */
 exports.registerUser = asyncErrors(async (req, res, next) => {
     const { name, email, password } = req.body;
-    logger.info(`Name: ${name}\n Email: ${email}\n Password: ${password}`)
     const user = await User.create({
         name,
         email,
         password,
     });
-    logger.info("Hello")
     logger.info(`User: ${user}`)
     sendToken(user, 201, res);
 });
