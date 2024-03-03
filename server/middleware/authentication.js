@@ -1,9 +1,17 @@
 const jwt = require("jsonwebtoken");
 const ErrorHandler = require("../utils/errorHandlers");
 const AsyncErrors = require("./AsyncErrors");
-const User = require("../models/userModel");
+const User = require("../models/user.models");
 
-const isAuthenticatedUser = AsyncErrors(async (req, res, next) => {
+/**
+ * Middleware to check if the user is authenticated.
+ * Verifies the JWT token in the request cookies and sets the authenticated user in the request object.
+ * @param {import('express').Request} req - The Express request object.
+ * @param {import('express').Response} res - The Express response object.
+ * @param {import('express').NextFunction} next - The Express next middleware function.
+ * @returns {Promise<void>} - A promise that resolves if the user is authenticated.
+ */
+exports.isAuthenticatedUser = AsyncErrors(async (req, res, next) => {
   const { token } = req.cookies;
 
   if (!token) return next(new ErrorHandler("Please login to access this", 401));
@@ -15,4 +23,3 @@ const isAuthenticatedUser = AsyncErrors(async (req, res, next) => {
   next();
 });
 
-module.exports = isAuthenticatedUser;

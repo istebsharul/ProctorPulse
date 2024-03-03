@@ -1,5 +1,6 @@
 const express = require("express");
-const isAuthenticatedUser = require("../middleware/authentication");
+const {isAuthenticatedUser} = require("../middleware/authentication");
+// const userProfile = require("../controllers/userController")
 
 const {
   registerUser,

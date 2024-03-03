@@ -1,26 +1,20 @@
-const mongoose = require("mongoose");
+const mongoose  = require("mongoose");
+// const DB_NAME = require("../utils/constants")
+const logger = require("../utils/logger")
 
-// mongodb://localhost:27017/ProctorPulse
-//ProctorPulse is the name of the database
-// 27017  is the default port number at which MongoDB listens for incoming connections.
-// localhost is the hostname of the machine where the MongoDB server is running. In this case, it's set to "localhost," which means the MongoDB server is expected to be running on the same machine as the application that's trying to connect to it.
-
-// const connectDatabase = () => {
-//     // console.log(process.env.DB_URI)
-//     mongoose.connect(process.env.DB_URI).then((data) => {
-//         console.log(`connected with server : ${data.connection.host}`)
-//     })
-// }
-
-const connectDatabase = () => {
-  mongoose
-    .connect(process.env.DB_URI)
-    .then((data) => {
-      console.log(`Connected to MongoDB: ${data.connection.host}`);
-    })
-    .catch((error) => {
-      console.error("Error connecting to MongoDB:", error);
-    });
-};
+/**
+ * Connects to the MongoDB database using Mongoose.
+ * @returns {Promise<void>} - A Promise that resolves if the connection is successful.
+ */
+const connectDatabase = async () => {
+    try {
+        const connectionInstance = await mongoose.connect(`${process.env.DB_URI}`)
+        logger.info(`Successfully connected to database. Host: ${connectionInstance.connection.host}`)
+    } catch(error) {
+        message = `Failed to connect to database. Reason ${error}`
+        logger.error(message)
+        process.exit(1)
+    }
+}
 
 module.exports = connectDatabase;
