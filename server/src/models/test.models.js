@@ -20,7 +20,7 @@ const testSchema = new Schema(
             required: true,
         },
         date: {
-            type: Date,
+        type: Date,
             required: true,
         },
         duration: {
