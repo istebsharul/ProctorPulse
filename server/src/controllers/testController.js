@@ -61,3 +61,18 @@ exports.getTestHistory = asyncErrors(async (req, res, next) => {
         return next(err);
     }
 });
+
+
+//Delete test
+exports.deleteTest = asyncErrors(async(req, res,next) => {
+    
+        const testId = req.params.id; // Assuming the test ID is passed as a route parameter
+        const deletedTest = await Test.findByIdAndDelete(testId);
+        
+        if (!deletedTest) return next(
+            new ErrorHandler('Test not found', 404)
+        );
+        
+        return res.status(200).json({ message: 'Test deleted successfully' });
+   
+});
