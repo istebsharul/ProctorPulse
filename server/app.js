@@ -44,6 +44,9 @@ app.use('/api/user', userRoutes);
 const testRoutes = require('./src/routes/testRouter');
 app.use('/api', testRoutes);
 
+const adminRoutes = require('./src/routes/adminRouter');
+app.use('/api/admin', adminRoutes);
+
 // Mount error handling middleware
 app.use(ErrorMiddleWare);
 
