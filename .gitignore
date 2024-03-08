@@ -120,6 +120,9 @@ dist
 #Bin
 bin/
 
+/server/src/config/config.env
+
+
 .prettierrc
 PersonalTests
 
