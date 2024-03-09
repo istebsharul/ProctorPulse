@@ -5,7 +5,7 @@ const Test = require('../models/test.models');
 const User = require('../models/user.models');
 const { isValidObjectId, isIdExists } = require('../utils/api/apiValidation');
 const UserTestAttempt = require('../models/userTestAttempt.models');
-const {formattedTestDetails} = require('../services/questionService')
+const { formattedTestDetails } = require('../services/questionService');
 /**
  * Fetch the test history of the user with given userId.
  * @param {Object} req - The HTTP request object.
@@ -174,7 +174,7 @@ exports.getTestDetails = asyncErrors(async (req, res, next) => {
             _id: testId,
             users: { $in: [userId] },
         });
-        logger.info(testDetails)
+        logger.info(testDetails);
         const data = await formattedTestDetails(testDetails);
         response = new ApiResponse(200, data);
         return res.status(200).json(response);
@@ -183,4 +183,51 @@ exports.getTestDetails = asyncErrors(async (req, res, next) => {
         logger.error(message);
         return next(err);
     }
+});
+
+//Delete test
+exports.deleteTest = asyncErrors(async (req, res, next) => {
+    const testId = req.params.id; // Assuming the test ID is passed as a route parameter
+    const deletedTest = await Test.findByIdAndDelete(testId);
+
+    if (!deletedTest) return next(new ErrorHandler('Test not found', 404));
+
+    return res.status(200).json({ message: 'Test deleted successfully' });
+});
+
+exports.createTest = asyncErrors(async (req, res, next) => {
+    const {
+        name,
+        subject,
+        date,
+        duration,
+        questions,
+        allowedUsers,
+        createdBy,
+    } = req.body;
+
+    const questionIds = [];
+
+    // Iterate over the questions array and create each question
+    for (const questionData of questions) {
+        const questionId = await createQuestion({ body: questionData }); // Create the question
+        questionIds.push(questionId); // Store the ID of the created question
+    }
+
+    // Create the test with the list of question IDs and allowed user IDs
+    const newTest = new Test({
+        name,
+        subject,
+        date,
+        duration,
+        questions: questionIds, // Assign the list of question IDs to the test
+        users: allowedUsers, // Assign the list of allowed user IDs to the test
+        createdBy,
+    });
+
+    await newTest.save();
+
+    return res
+        .status(201)
+        .json({ message: 'Test created successfully', test: newTest });
 });
