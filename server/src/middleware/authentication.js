@@ -39,6 +39,6 @@ exports.isAuthenticatedAdmin = AsyncErrors(async (req, res, next) => {
     req.admin = await Admin.findById(decodeData.id);
 
     // console.log('req.admin', req.admin);
-
+    
     next();
 });

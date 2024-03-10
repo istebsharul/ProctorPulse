@@ -17,6 +17,6 @@ router.route('/user/:userId/test/:testId').get(getTestDetails);
 
 //admin routes
 router.route('/admin/tests/:testId/delete').delete(isAuthenticatedAdmin, deleteTest);
-router.route('/admin/tests/create').delete(isAuthenticatedAdmin, createTest);
+router.route('/admin/tests/create').post(isAuthenticatedAdmin, createTest);
 
 module.exports = router;

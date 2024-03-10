@@ -1,8 +1,8 @@
 const ErrorHandler = require('../utils/errorHandlers');
 const asyncErrors = require('../middleware/AsyncErrors');
-const Question = require('../models/user.models');
+const Question = require('../models/question.models');
 
-exports.createQuestion = asyncErrors(async (req, res, next) => {
+exports.createQuestion = async (req, res, next) => {
     // Extracting data from the request body
     const { title, options, correct_answer } = req.body;
 
@@ -17,10 +17,5 @@ exports.createQuestion = asyncErrors(async (req, res, next) => {
     await newQuestion.save();
 
     // Returning success response
-    return res
-        .status(201)
-        .json({
-            message: 'Question created successfully',
-            question: newQuestion,
-        });
-});
+    return newQuestion;
+};
