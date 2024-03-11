@@ -3,9 +3,12 @@ const ApiResponse = require('../utils/api/apiResponse');
 const asyncErrors = require('../middleware/AsyncErrors');
 const Test = require('../models/test.models');
 const User = require('../models/user.models');
+const Question = require('../models/question.models');
 const { isValidObjectId, isIdExists } = require('../utils/api/apiValidation');
 const UserTestAttempt = require('../models/userTestAttempt.models');
-const {formattedTestDetails} = require('../services/questionService')
+const { formattedTestDetails } = require('../services/questionService');
+const { createQuestion } = require('./questionController');
+const ErrorHandler = require('../utils/errorHandlers');
 /**
  * Fetch the test history of the user with given userId.
  * @param {Object} req - The HTTP request object.
@@ -174,7 +177,7 @@ exports.getTestDetails = asyncErrors(async (req, res, next) => {
             _id: testId,
             users: { $in: [userId] },
         });
-        logger.info(testDetails)
+        logger.info(testDetails);
         const data = await formattedTestDetails(testDetails);
         response = new ApiResponse(200, data);
         return res.status(200).json(response);
@@ -183,4 +186,74 @@ exports.getTestDetails = asyncErrors(async (req, res, next) => {
         logger.error(message);
         return next(err);
     }
+});
+
+//Delete test
+exports.deleteTest = asyncErrors(async (req, res, next) => {
+    const testId = req.params.testId;
+
+    // Retrieve the test document by its ID
+    const test = await Test.findById(testId);
+
+    if (!test) {
+        return next(new ErrorHandler('Test not found', 404));
+    }
+
+    // Extract the IDs of the questions associated with the test
+    const questionIds = test.questions;
+
+    // Delete the corresponding question documents
+    await Promise.all(
+        questionIds.map(async (questionId) => {
+            await Question.findByIdAndDelete(questionId);
+        })
+    );
+
+    // Delete the test document itself
+    await Test.findByIdAndDelete(testId);
+
+    return res
+        .status(200)
+        .json({
+            message: 'Test and associated questions deleted successfully',
+        });
+});
+
+exports.createTest = asyncErrors(async (req, res, next) => {
+    const { name, subject, date, duration, questions, allowedUsers } = req.body;
+
+    const questionIds = [];
+
+    // Iterate over the questions array and create each question
+    for (const questionData of questions) {
+        // Call the createQuestion function
+
+        const response = await createQuestion({ body: questionData });
+
+        // Check if the response object exists and has the 'success' property
+        if (response && response._id) {
+            questionIds.push(response._id); // Store the ID of the created question
+        } else {
+            // Throw an error if the response object is undefined or does not have 'success' property
+            console.log(response);
+            throw new Error('Failed to create question');
+        }
+    }
+
+    // Create the test with the list of question IDs and allowed user IDs
+    const newTest = new Test({
+        name,
+        subject,
+        date,
+        duration,
+        questions: questionIds, // Assign the list of question IDs to the test
+        users: allowedUsers, // Assign the list of allowed user IDs to the test
+        createdBy: req.admin._id,
+    });
+
+    await newTest.save();
+
+    return res
+        .status(201)
+        .json({ message: 'Test created successfully', test: newTest });
 });
