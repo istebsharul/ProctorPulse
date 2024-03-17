@@ -9,6 +9,9 @@ const UserTestAttempt = require('../models/userTestAttempt.models');
 const { formattedTestDetails } = require('../services/questionService');
 const { createQuestion } = require('./questionController');
 const ErrorHandler = require('../utils/errorHandlers');
+const calculateScore = require('../services/evaluation');
+const UserAttempt = require('../models/userAttemptResponse.model');
+
 /**
  * Fetch the test history of the user with given userId.
  * @param {Object} req - The HTTP request object.
@@ -73,6 +76,8 @@ exports.getTestHistory = asyncErrors(async (req, res, next) => {
  * @param {Function} next - The next middleware function in the chain.
  * @returns {Promise<void>} - A Promise that resolves after the user is registered.
  */
+
+// Get Available Test -> Fetching all the Test assigned to a particular User
 exports.getAvailableTests = asyncErrors(async (req, res, next) => {
     const userId = req.params.userId;
     logger.info(`RequestBody: ${userId}`);
@@ -135,6 +140,7 @@ exports.getAvailableTests = asyncErrors(async (req, res, next) => {
     }
 });
 
+// Get Test Details -> Fetching all the question of the Test
 exports.getTestDetails = asyncErrors(async (req, res, next) => {
     const userId = req.params.userId;
     const testId = req.params.testId;
@@ -188,35 +194,30 @@ exports.getTestDetails = asyncErrors(async (req, res, next) => {
     }
 });
 
-//Delete test
 exports.deleteTest = asyncErrors(async (req, res, next) => {
     const testId = req.params.testId;
 
-    // Retrieve the test document by its ID
     const test = await Test.findById(testId);
 
     if (!test) {
-        return next(new ErrorHandler('Test not found', 404));
+        const errorMessage = 'Test not found';
+        logger.error(errorMessage);
+        return next(new ErrorHandler(errorMessage, 404));
     }
 
-    // Extract the IDs of the questions associated with the test
     const questionIds = test.questions;
 
-    // Delete the corresponding question documents
     await Promise.all(
         questionIds.map(async (questionId) => {
             await Question.findByIdAndDelete(questionId);
         })
     );
 
-    // Delete the test document itself
     await Test.findByIdAndDelete(testId);
 
-    return res
-        .status(200)
-        .json({
-            message: 'Test and associated questions deleted successfully',
-        });
+    const successMessage = 'Test and associated questions deleted successfully';
+    logger.info(successMessage);
+    return res.status(200).json({ message: successMessage });
 });
 
 exports.createTest = asyncErrors(async (req, res, next) => {
@@ -224,36 +225,104 @@ exports.createTest = asyncErrors(async (req, res, next) => {
 
     const questionIds = [];
 
-    // Iterate over the questions array and create each question
     for (const questionData of questions) {
-        // Call the createQuestion function
-
         const response = await createQuestion({ body: questionData });
 
-        // Check if the response object exists and has the 'success' property
         if (response && response._id) {
-            questionIds.push(response._id); // Store the ID of the created question
+            questionIds.push(response._id);
         } else {
-            // Throw an error if the response object is undefined or does not have 'success' property
-            console.log(response);
-            throw new Error('Failed to create question');
+            const errorMessage = 'Failed to create question';
+            logger.error(errorMessage);
+            return next(new Error(errorMessage));
         }
     }
 
-    // Create the test with the list of question IDs and allowed user IDs
     const newTest = new Test({
         name,
         subject,
         date,
         duration,
-        questions: questionIds, // Assign the list of question IDs to the test
-        users: allowedUsers, // Assign the list of allowed user IDs to the test
+        questions: questionIds,
+        users: allowedUsers,
         createdBy: req.admin._id,
     });
 
     await newTest.save();
 
-    return res
-        .status(201)
-        .json({ message: 'Test created successfully', test: newTest });
+    const successMessage = 'Test created successfully';
+    logger.info(successMessage);
+    return res.status(201).json({ message: successMessage, test: newTest });
+});
+
+exports.submitTest = asyncErrors(async (req, res, next) => {
+    const { userId, testId, userResponses, duration } = req.body;
+
+    const total_score = await calculateScore(userResponses, testId);
+
+    logger.info(
+        `Total score for user ${userId} in test ${testId}: ${total_score}`
+    );
+
+    const newUserAttempt = new UserAttempt({
+        userId,
+        testId,
+        userResponses,
+        total_score,
+        duration,
+    });
+
+    const savedUserAttempt = await newUserAttempt.save();
+
+    const successMessage = 'User response saved successfully';
+    const response = new ApiResponse(200, savedUserAttempt, successMessage);
+    logger.info(successMessage);
+    res.status(201).json({
+        response,
+    });
+});
+
+exports.getTestResponses = asyncErrors(async (req, res, next) => {
+    const { testId } = req.params;
+
+    // Find all user attempts for the given testId
+    const userAttempts = await UserAttempt.find({ testId }).exec();
+
+    // Extract user IDs from userAttempts
+    const userIds = userAttempts.map((attempt) => attempt.userId);
+
+    // Find users based on extracted userIds
+    const users = await User.find({ _id: { $in: userIds } }).exec();
+
+    // Log successful retrieval
+    logger.info(`Successfully retrieved users who attempted test ${testId}`);
+
+    // Respond with the found users
+    res.json({ users });
+});
+
+exports.testUserResponses = asyncErrors(async (req, res, next) => {
+    const { testId, userId } = req.params;
+
+    // Find the user attempt for the given user ID and test ID
+    const userAttempt = await UserAttempt.findOne({ userId, testId })
+        // .populate('userId', 'name email')
+        .exec();
+
+    // If no user attempt found, return an empty response
+    if (!userAttempt) {
+        return res.status(200).json({
+            success: true,
+            message: 'No response found for the given user ID and test ID',
+            response: null,
+        });
+    }
+
+    const message = 'User responses retrieved successfully';
+    logger.info(message);
+
+    const response = new ApiResponse(200, userAttempt.userResponses, message);
+    // User attempt found, return the userResponses
+    res.status(200).json({
+        response,
+    });
 });
