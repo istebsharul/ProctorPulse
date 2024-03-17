@@ -194,7 +194,6 @@ exports.getTestDetails = asyncErrors(async (req, res, next) => {
     }
 });
 
-
 exports.deleteTest = asyncErrors(async (req, res, next) => {
     const testId = req.params.testId;
 
@@ -260,7 +259,9 @@ exports.submitTest = asyncErrors(async (req, res, next) => {
 
     const total_score = await calculateScore(userResponses, testId);
 
-    logger.info(`Total score for user ${userId} in test ${testId}: ${total_score}`);
+    logger.info(
+        `Total score for user ${userId} in test ${testId}: ${total_score}`
+    );
 
     const newUserAttempt = new UserAttempt({
         userId,
@@ -273,10 +274,55 @@ exports.submitTest = asyncErrors(async (req, res, next) => {
     const savedUserAttempt = await newUserAttempt.save();
 
     const successMessage = 'User response saved successfully';
+    const response = new ApiResponse(200, savedUserAttempt, successMessage);
     logger.info(successMessage);
     res.status(201).json({
-        success: true,
-        message: successMessage,
-        UserAttempt: savedUserAttempt,
+        response,
+    });
+});
+
+exports.getTestResponses = asyncErrors(async (req, res, next) => {
+    const { testId } = req.params;
+
+    // Find all user attempts for the given testId
+    const userAttempts = await UserAttempt.find({ testId }).exec();
+
+    // Extract user IDs from userAttempts
+    const userIds = userAttempts.map((attempt) => attempt.userId);
+
+    // Find users based on extracted userIds
+    const users = await User.find({ _id: { $in: userIds } }).exec();
+
+    // Log successful retrieval
+    logger.info(`Successfully retrieved users who attempted test ${testId}`);
+
+    // Respond with the found users
+    res.json({ users });
+});
+
+exports.testUserResponses = asyncErrors(async (req, res, next) => {
+    const { testId, userId } = req.params;
+
+    // Find the user attempt for the given user ID and test ID
+    const userAttempt = await UserAttempt.findOne({ userId, testId })
+        // .populate('userId', 'name email')
+        .exec();
+
+    // If no user attempt found, return an empty response
+    if (!userAttempt) {
+        return res.status(200).json({
+            success: true,
+            message: 'No response found for the given user ID and test ID',
+            response: null,
+        });
+    }
+
+    const message = 'User responses retrieved successfully';
+    logger.info(message);
+
+    const response = new ApiResponse(200, userAttempt.userResponses, message);
+    // User attempt found, return the userResponses
+    res.status(200).json({
+        response,
     });
 });
