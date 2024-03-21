@@ -1,43 +1,43 @@
 import {
-  LOGIN_FAIL,
-  LOGIN_REQUEST,
-  LOGIN_SUCCESS,
-  CLEAR_ERRORS,
-} from "../constants/userConstant.js";
+    LOGIN_FAIL,
+    LOGIN_REQUEST,
+    LOGIN_SUCCESS,
+    CLEAR_ERRORS,
+} from '../constants/userConstant.js';
 
 //states default value is an object, having another empty object user
 export const userReducer = (state = { user: {} }, action) => {
-  switch (action.type) {
-    case LOGIN_REQUEST:
-      return {
-        loading: true,
-        isAuthenticated: false,
-      };
+    switch (action.type) {
+        case LOGIN_REQUEST:
+            return {
+                loading: true,
+                isAuthenticated: false,
+            };
 
-    case LOGIN_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        isAuthenticated: true,
-        user: action.payload,
-      };
-    case LOGIN_FAIL:
-      return {
-        ...state,
-        loading: false,
-        isAuthenticated: false,
-        user: null,
-        error: action.payload,
-      };
+        case LOGIN_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                isAuthenticated: true,
+                user: action.payload,
+            };
+        case LOGIN_FAIL:
+            return {
+                ...state,
+                loading: false,
+                isAuthenticated: false,
+                user: null,
+                error: action.payload,
+            };
 
-    case CLEAR_ERRORS:
-      return {
-        //shallow copy
-        ...state,
-        error: null,
-      };
+        case CLEAR_ERRORS:
+            return {
+                //shallow copy
+                ...state,
+                error: null,
+            };
 
-    default:
-      return state;
-  }
+        default:
+            return state;
+    }
 };
