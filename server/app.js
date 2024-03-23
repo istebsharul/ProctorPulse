@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload');
 const ErrorMiddleWare = require('./src/middleware/error');
 const DATA_LIMIT = require('./src/utils/constants');
+const cors = require('cors');
 
 /**
  * Initializes the Express application with necessary middleware and routes.
@@ -16,6 +17,8 @@ const DATA_LIMIT = require('./src/utils/constants');
 //     origin: process.env.CORS_ORIGIN,
 //     credentials: true
 // }));
+
+app.use(cors());
 
 // Parse JSON request bodies with specified data limit
 app.use(
