@@ -5,6 +5,8 @@ import {
   SIGNUP_SUCCESS,
   SIGNUP_FAILURE,
   LOGOUT,
+  FORGOT_PASSWORD_SUCCESS,
+  FORGOT_PASSWORD_FAILURE
 } from "./ActionTypes";
 
 // Function to set cookie
@@ -52,4 +54,19 @@ export const signup = (name, email, password) => {
 
 export const logout = () => {
   return { type: LOGOUT };
+};
+
+export const forgotPassword = (email) => {
+  return async (dispatch) => {
+    try {
+      // Simulate API call for forgot password
+      const response = await axios.post(
+        "http://localhost:4000/api/user/forgotpassword",
+        { email }
+      );
+      dispatch({ type: FORGOT_PASSWORD_SUCCESS, payload: response.data });
+    } catch (error) {
+      dispatch({ type: FORGOT_PASSWORD_FAILURE, payload: error.message });
+    }
+  };
 };

@@ -4,6 +4,8 @@ import {
   SIGNUP_SUCCESS,
   SIGNUP_FAILURE,
   LOGOUT,
+  FORGOT_PASSWORD_SUCCESS,
+  FORGOT_PASSWORD_FAILURE,
 } from "../Actions/ActionTypes";
 
 const initialState = {
@@ -22,6 +24,7 @@ const authReducer = (state = initialState, action) => {
       };
     case LOGIN_FAILURE:
     case SIGNUP_FAILURE:
+    case FORGOT_PASSWORD_FAILURE:
       return {
         ...state,
         user: null,
@@ -32,6 +35,15 @@ const authReducer = (state = initialState, action) => {
         ...state,
         user: null,
         error: null,
+      };
+    case FORGOT_PASSWORD_SUCCESS:
+      return {
+        ...state,
+        // You might want to handle the success scenario differently,
+        // such as displaying a message to the user.
+        // For example, you could set user to null and error to a success message.
+        user: null,
+        error: action.payload,
       };
     default:
       return state;

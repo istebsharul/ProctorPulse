@@ -1,12 +1,14 @@
 import React from "react";
+import Login from "../User/Login";
 import Navbar from "../Navbar/Navbar";
 
-function Home() {
+function LoginPage() {
   return (
     <>
       <Navbar />
+      <Login />
     </>
   );
 }
 
-export default Home;
+export default LoginPage;

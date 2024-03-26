@@ -1,12 +1,14 @@
 import React from "react";
 import Navbar from "../Navbar/Navbar";
+import Signup from "../User/Signup";
 
-function Home() {
+function SignupPage() {
   return (
     <>
       <Navbar />
+      <Signup />
     </>
   );
 }
 
-export default Home;
+export default SignupPage;
