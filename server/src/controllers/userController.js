@@ -211,10 +211,9 @@ exports.updateProfile = asyncErrors(async (req, res, next) => {
         );
     }
 
-    // console.log({req.user._id})
-    // Find the user by their email
+    // Find the user by their id
     const user = await User.findById(req.user.id);
-    // console.log(req.user.id);
+    console.log(req.user.id);
 
     //If no user is found, return an error
     if (!user) {

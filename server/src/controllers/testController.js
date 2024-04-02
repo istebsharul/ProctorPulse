@@ -3,9 +3,15 @@ const ApiResponse = require('../utils/api/apiResponse');
 const asyncErrors = require('../middleware/AsyncErrors');
 const Test = require('../models/test.models');
 const User = require('../models/user.models');
+const Question = require('../models/question.models');
 const { isValidObjectId, isIdExists } = require('../utils/api/apiValidation');
 const UserTestAttempt = require('../models/userTestAttempt.models');
 const { formattedTestDetails } = require('../services/questionService');
+const { createQuestion } = require('./questionController');
+const ErrorHandler = require('../utils/errorHandlers');
+const calculateScore = require('../services/evaluation');
+const UserAttempt = require('../models/userAttemptResponse.model');
+
 /**
  * Fetch the test history of the user with given userId.
  * @param {Object} req - The HTTP request object.
@@ -70,6 +76,8 @@ exports.getTestHistory = asyncErrors(async (req, res, next) => {
  * @param {Function} next - The next middleware function in the chain.
  * @returns {Promise<void>} - A Promise that resolves after the user is registered.
  */
+
+// Get Available Test -> Fetching all the Test assigned to a particular User
 exports.getAvailableTests = asyncErrors(async (req, res, next) => {
     const userId = req.params.userId;
     logger.info(`RequestBody: ${userId}`);
@@ -132,6 +140,7 @@ exports.getAvailableTests = asyncErrors(async (req, res, next) => {
     }
 });
 
+// Get Test Details -> Fetching all the question of the Test
 exports.getTestDetails = asyncErrors(async (req, res, next) => {
     const userId = req.params.userId;
     const testId = req.params.testId;
@@ -185,6 +194,138 @@ exports.getTestDetails = asyncErrors(async (req, res, next) => {
     }
 });
 
+exports.deleteTest = asyncErrors(async (req, res, next) => {
+    const testId = req.params.testId;
+
+    const test = await Test.findById(testId);
+
+    if (!test) {
+        const errorMessage = 'Test not found';
+        logger.error(errorMessage);
+        return next(new ErrorHandler(errorMessage, 404));
+    }
+
+    const questionIds = test.questions;
+
+    await Promise.all(
+        questionIds.map(async (questionId) => {
+            await Question.findByIdAndDelete(questionId);
+        })
+    );
+
+    await Test.findByIdAndDelete(testId);
+
+    const successMessage = 'Test and associated questions deleted successfully';
+    logger.info(successMessage);
+    return res.status(200).json({ message: successMessage });
+});
+
+exports.createTest = asyncErrors(async (req, res, next) => {
+    const { name, subject, date, duration, questions, allowedUsers } = req.body;
+
+    const questionIds = [];
+
+    for (const questionData of questions) {
+        const response = await createQuestion({ body: questionData });
+
+        if (response && response._id) {
+            questionIds.push(response._id);
+        } else {
+            const errorMessage = 'Failed to create question';
+            logger.error(errorMessage);
+            return next(new Error(errorMessage));
+        }
+    }
+
+    const newTest = new Test({
+        name,
+        subject,
+        date,
+        duration,
+        questions: questionIds,
+        users: allowedUsers,
+        createdBy: req.admin._id,
+    });
+
+    await newTest.save();
+
+    const successMessage = 'Test created successfully';
+    logger.info(successMessage);
+    return res.status(201).json({ message: successMessage, test: newTest });
+});
+
+exports.submitTest = asyncErrors(async (req, res, next) => {
+    const { userId, testId, userResponses, duration } = req.body;
+
+    const total_score = await calculateScore(userResponses, testId);
+
+    logger.info(
+        `Total score for user ${userId} in test ${testId}: ${total_score}`
+    );
+
+    const newUserAttempt = new UserAttempt({
+        userId,
+        testId,
+        userResponses,
+        total_score,
+        duration,
+    });
+
+    const savedUserAttempt = await newUserAttempt.save();
+
+    const successMessage = 'User response saved successfully';
+    const response = new ApiResponse(200, savedUserAttempt, successMessage);
+    logger.info(successMessage);
+    res.status(201).json({
+        response,
+    });
+});
+
+exports.getTestResponses = asyncErrors(async (req, res, next) => {
+    const { testId } = req.params;
+
+    // Find all user attempts for the given testId
+    const userAttempts = await UserAttempt.find({ testId }).exec();
+
+    // Extract user IDs from userAttempts
+    const userIds = userAttempts.map((attempt) => attempt.userId);
+
+    // Find users based on extracted userIds
+    const users = await User.find({ _id: { $in: userIds } }).exec();
+
+    // Log successful retrieval
+    logger.info(`Successfully retrieved users who attempted test ${testId}`);
+
+    // Respond with the found users
+    res.json({ users });
+});
+
+exports.testUserResponses = asyncErrors(async (req, res, next) => {
+    const { testId, userId } = req.params;
+
+    // Find the user attempt for the given user ID and test ID
+    const userAttempt = await UserAttempt.findOne({ userId, testId })
+        // .populate('userId', 'name email')
+        .exec();
+
+    // If no user attempt found, return an empty response
+    if (!userAttempt) {
+        return res.status(200).json({
+            success: true,
+            message: 'No response found for the given user ID and test ID',
+            response: null,
+        });
+    }
+
+    const message = 'User responses retrieved successfully';
+    logger.info(message);
+
+    const response = new ApiResponse(200, userAttempt.userResponses, message);
+    // User attempt found, return the userResponses
+    res.status(200).json({
+        response,
+    });
+});
 
 exports.submitTest = asyncErrors(async (req, res, next) => {
     const userId = req.params.userId;
@@ -245,7 +386,9 @@ exports.submitTest = asyncErrors(async (req, res, next) => {
             await submission.save();
 
             // Return success response
-            const response = new ApiResponse(200, { message: 'Test submitted successfully.' });
+            const response = new ApiResponse(200, {
+                message: 'Test submitted successfully.',
+            });
             return res.status(200).json(response);
         } else {
             // Process submitted answers and save to the database
@@ -261,7 +404,9 @@ exports.submitTest = asyncErrors(async (req, res, next) => {
             await submission.save();
 
             // Return success response
-            const response = new ApiResponse(200, { message: 'Test submitted successfully.' });
+            const response = new ApiResponse(200, {
+                message: 'Test submitted successfully.',
+            });
             return res.status(200).json(response);
         }
     } catch (err) {

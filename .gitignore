@@ -120,7 +120,11 @@ dist
 #Bin
 bin/
 
+/server/src/config/config.env
+
+
 .prettierrc
 PersonalTests
 
 # End of https://mrkandreev.name/snippets/gitignore-generator/#Node
+

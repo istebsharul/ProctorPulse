@@ -20,8 +20,8 @@ const testSchema = new Schema(
             required: true,
         },
         date: {
-        type: Date,
-            required: true,
+            type: Date,
+            default: Date.now,
         },
         duration: {
             type: Number,
