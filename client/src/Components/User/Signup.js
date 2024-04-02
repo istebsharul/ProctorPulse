@@ -21,25 +21,28 @@ function Signup() {
 
   return (
     <>
-      <div className="h-screen flex justify-center items-center bg-purple-200">
-        <div className="w-2/5 flex justify-center items-center p-5">
-          <img className="w-2/10" src={image1} alt="" />
-          <img className="w-2/10" src={image2} alt="" />
+      <div className="flex flex-wrap justify-center items-center bg-purple-200">
+        <div className="w-full md:w-2/5 flex justify-center items-center p-5">
+          <img className="w-1/3" src={image1} alt="" />
+          <img className="w-1/3" src={image2} alt="" />
         </div>
-        <div className="w-3/5 h-full rounded-tl-3xl rounded-bl-3xl bg-white flex">
+        <div className="w-full md:w-3/5 rounded-tl-3xl md:h-screen md:rounded-bl-3xl bg-white flex justify-center items-center">
           {error && <p className="text-red-500 mb-4">{error}</p>}
-          <form onSubmit={handleSubmit} className="w-3/5 space-y-2 m-auto">
+          <form
+            onSubmit={handleSubmit}
+            className="w-full md:w-3/5 space-y-1 m-auto p-5 md:p-0"
+          >
             <div>
-              <h1 className="text-5xl font-bold font-poppins">
+              <h1 className="text-3xl md:text-5xl font-bold font-poppins">
                 Create an Account
               </h1>
-              <h3 className="p-1">
+              <h3 className="p-1 text-sm md:text-base">
                 Create an Account, It takes less than a minute. Enter your
                 Credentials.
               </h3>
             </div>
-            <div className="flex items-center space-x-4">
-              <div className="w-full border border-gray-300 rounded-2xl px-5 py-2.5 focus:outline-none focus:border-purple-500">
+            <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0 md:space-x-4">
+              <div className="w-full border border-gray-300 rounded-2xl px-5 py-2.5 focus:outline-none focus:border-purple-500 flex ">
                 <input
                   type="radio"
                   id="student"
@@ -53,7 +56,7 @@ function Signup() {
                 </label>
               </div>
 
-              <div className="w-full border border-gray-300 rounded-2xl px-5 py-2.5 focus:outline-none focus:border-purple-500">
+              <div className="w-full border border-gray-300 rounded-2xl px-5 py-2.5 focus:outline-none focus:border-purple-500 flex">
                 <input
                   type="radio"
                   id="teacher"
@@ -97,19 +100,19 @@ function Signup() {
             />
             <button
               type="submit"
-              className="w-full border rounded-2xl px-5 py-2.5 focus:outline-none bg-purple-900 text-white text-1.5xl"
+              className="w-full border rounded-2xl px-5 py-2.5 focus:outline-none bg-purple-900 text-white text-lg md:text-xl"
             >
               Register
             </button>
             <div className="flex items-center justify-center mt-4">
-              <hr className="w-1/4 border-gray-500 border-solid border-t-1" />
+              <hr className="w-1/4 md:w-1/6 border-gray-500 border-solid border-t-1" />
               <span className="mx-4 text-gray-500">or</span>
-              <hr className="w-1/4 border-gray-500 border-solid border-t-1" />
+              <hr className="w-1/4 md:w-1/6 border-gray-500 border-solid border-t-1" />
             </div>
             <div className="flex items-center justify-center mt-4">
               <a
                 href="/signup"
-                className="border rounded-2xl px-20 py-2.5 flex items-center justify-center focus:outline-none bg-gray-900 text-white text-1.5xl"
+                className="border rounded-2xl px-4 md:px-10 py-2.5 flex items-center justify-center focus:outline-none bg-gray-900 text-white text-lg md:text-xl"
               >
                 <img src={google_logo} className="w-5 mr-2" alt="Google Logo" />
                 Continue with Google

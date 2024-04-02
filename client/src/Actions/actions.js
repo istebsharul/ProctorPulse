@@ -6,7 +6,7 @@ import {
   SIGNUP_FAILURE,
   LOGOUT,
   FORGOT_PASSWORD_SUCCESS,
-  FORGOT_PASSWORD_FAILURE
+  FORGOT_PASSWORD_FAILURE,
 } from "./ActionTypes";
 
 // Function to set cookie
@@ -29,7 +29,6 @@ export const login = (email, password) => {
       const token = response.data.token;
       setCookie("jwt", token, 1); // Set cookie expiry for 1 day
       // console.log(token);
-
       dispatch({ type: LOGIN_SUCCESS, payload: response.data });
     } catch (error) {
       dispatch({ type: LOGIN_FAILURE, payload: error.message });

@@ -5,7 +5,6 @@ import Navbar from "../Navbar/Navbar";
 function ForgotpasswordPage() {
   return (
     <>
-      <Navbar />
       <Forgotpassword />
     </>
   );

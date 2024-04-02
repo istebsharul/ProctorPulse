@@ -5,7 +5,6 @@ import Navbar from "../Navbar/Navbar";
 function LoginPage() {
   return (
     <>
-      <Navbar />
       <Login />
     </>
   );

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { forgotPassword, login } from "../../Actions/actions";
+import { forgotPassword } from "../../Actions/actions";
 import image1 from "../../Assets/image1.png";
 import image2 from "../../Assets/image2.png";
 
@@ -15,19 +15,22 @@ function Forgotpassword() {
   };
   return (
     <>
-      <div className="h-screen flex justify-center items-center bg-purple-200">
-        <div className="w-2/5 flex justify-center items-center  p-5">
-          <img className="" src={image1} alt=""></img>
-          <img className="" src={image2} alt=""></img>
+      <div className="flex flex-wrap justify-center items-center bg-purple-200">
+        <div className="w-full md:w-2/5 flex justify-center items-center p-5">
+          <img className="w-1/3" src={image1} alt="" />
+          <img className="w-1/3" src={image2} alt="" />
         </div>
-        <div className="w-3/5 h-screen rounded-tl-3xl rounded-bl-3xl bg-white p-20">
+        <div className="w-full md:w-3/5 md:h-screen rounded-tl-3xl rounded-bl-3xl bg-white flex justify-center items-center">
           {error && <p className="text-red-500 mb-4">{error}</p>}
-          <form onSubmit={handleSubmit} className="space-y-3 items-center p-20">
+          <form
+            onSubmit={handleSubmit}
+            className="w-full md:w-3/5 space-y-2 items-center p-5 md:p-0"
+          >
             <div>
-              <h1 className="text-5xl font-bold font-poppins">
+              <h1 className="text-3xl md:text-5xl font-bold font-poppins">
                 Forgot Password?
               </h1>
-              <h3 className="p-1">
+              <h3 className="p-1 text-sm md:text-base">
                 Don’t worry! It happens. Please enter the email address linked
                 with your Account.
               </h3>
@@ -42,15 +45,14 @@ function Forgotpassword() {
 
             <button
               type="submit"
-              className="w-full border rounded-2xl px-5 py-3 focus:outline-none bg-purple-900 text-white text-1.5xl"
+              className="w-full border rounded-2xl px-5 py-3 focus:outline-none bg-purple-900 text-white text-lg md:text-xl"
             >
-              Login
+              Reset Password
             </button>
 
-            <div className="text-center m-auto flex justify-center">
+            <div className="text-center flex justify-center">
               Remember Password
               <a href="/login" className="font-bold px-2">
-                {" "}
                 Log In
               </a>
             </div>

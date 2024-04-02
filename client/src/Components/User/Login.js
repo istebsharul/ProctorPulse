@@ -14,21 +14,28 @@ function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(login(email, password));
+    setEmail("");
+    setPassword("");
   };
 
   return (
     <>
-      <div className="h-screen flex justify-center items-center bg-purple-200">
-        <div className="w-2/5 flex justify-center items-center  p-5">
-          <img className="" src={image1} alt=""></img>
-          <img className="" src={image2} alt=""></img>
+      <div className="flex flex-wrap justify-center items-center bg-purple-200">
+        <div className="w-full md:w-2/5 flex justify-center items-center p-5">
+          <img className="w-1/3" src={image1} alt="" />
+          <img className="w-1/3" src={image2} alt="" />
         </div>
-        <div className="w-3/5 rounded-tl-3xl rounded-bl-3xl bg-white p-20">
+        <div className="w-full md:w-3/5 md:h-screen rounded-tl-3xl md:rounded-bl-3xl bg-white flex justify-center items-center">
           {error && <p className="text-red-500 mb-4">{error}</p>}
-          <form onSubmit={handleSubmit} className="space-y-3 items-center p-20">
+          <form
+            onSubmit={handleSubmit}
+            className="w-full md:w-3/5 space-y-1 md:space-y-3 items-center p-5 md:p-0"
+          >
             <div>
-              <h1 className="text-5xl font-bold font-poppins">Welcome Back!</h1>
-              <h3 className="p-1">
+              <h1 className="text-3xl md:text-5xl font-bold font-poppins">
+                Welcome Back!
+              </h1>
+              <h3 className="p-1 text-sm md:text-base">
                 We are happy to see you back. Enter your registered email and
                 password.
               </h3>
@@ -49,7 +56,7 @@ function Login() {
             />
             <button
               type="submit"
-              className="w-full border rounded-2xl px-5 py-3 focus:outline-none bg-purple-900 text-white text-1.5xl"
+              className="w-full border rounded-2xl px-5 py-3 focus:outline-none bg-purple-900 text-white text-lg md:text-xl"
             >
               Login
             </button>
@@ -61,14 +68,14 @@ function Login() {
               Forgot Password?
             </a>
             <div className="flex items-center justify-center mt-4">
-              <hr className="w-1/4 border-gray-500 border-solid border-t-1" />
+              <hr className="w-1/4 md:w-1/6 border-gray-500 border-solid border-t-1" />
               <span className="mx-4 text-gray-500">or</span>
-              <hr className="w-1/4 border-gray-500 border-solid border-t-1" />
+              <hr className="w-1/4 md:w-1/6 border-gray-500 border-solid border-t-1" />
             </div>
             <div className="flex items-center justify-center mt-4">
               <a
                 href="/signup"
-                className="border rounded-2xl px-20 py-2.5 focus:outline-none bg-gray-900 text-white text-1.5xl"
+                className="border rounded-2xl px-4 md:px-10 py-2.5 focus:outline-none bg-gray-900 text-white text-lg md:text-xl"
               >
                 Register with us
               </a>

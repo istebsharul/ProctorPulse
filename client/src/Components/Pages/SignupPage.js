@@ -5,7 +5,6 @@ import Signup from "../User/Signup";
 function SignupPage() {
   return (
     <>
-      <Navbar />
       <Signup />
     </>
   );
