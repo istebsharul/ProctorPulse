@@ -7,7 +7,9 @@ import {
   LOGOUT,
   FORGOT_PASSWORD_SUCCESS,
   FORGOT_PASSWORD_FAILURE,
-} from "./ActionTypes";
+  LOAD_FAILURE,
+  LOAD_SUCCESS
+} from "../Constants/userConstant";
 
 // Function to set cookie
 const setCookie = (name, value, days) => {
@@ -22,7 +24,7 @@ export const login = (email, password) => {
     try {
       // Simulate API call for login
       const response = await axios.post(
-        "http://localhost:4000/api/user/login",
+        "/api/user/login",
         { email, password }
       );
 
@@ -36,12 +38,26 @@ export const login = (email, password) => {
   };
 };
 
+export const load = () => async (dispatch) => {
+  try {
+    
+    
+    const { data } = await axios.get(
+      "/api/user/profile"
+    );
+
+    dispatch({ type: LOAD_SUCCESS, payload: data.user });
+  } catch (error) {
+    dispatch({ type: LOAD_FAILURE, payload: error.response.data.message });
+  }
+};
+
 export const signup = (name, email, password) => {
   return async (dispatch) => {
     try {
       // Simulate API call for signup
       const response = await axios.post(
-        "http://localhost:4000/api/user/register",
+        "/api/user/register",
         { name, email, password }
       );
       dispatch({ type: SIGNUP_SUCCESS, payload: response.data });
@@ -60,7 +76,7 @@ export const forgotPassword = (email) => {
     try {
       // Simulate API call for forgot password
       const response = await axios.post(
-        "http://localhost:4000/api/user/forgotpassword",
+        "/api/user/forgotpassword",
         { email }
       );
       dispatch({ type: FORGOT_PASSWORD_SUCCESS, payload: response.data });

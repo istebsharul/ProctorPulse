@@ -15,14 +15,13 @@ const Admin = require('../models/admin.models');
 exports.isAuthenticatedUser = AsyncErrors(async (req, res, next) => {
     const { token } = req.cookies;
 
-    if (!token)
+    if (!token) {
         return next(new ErrorHandler('Please login to access this', 401));
+    }
 
     const decodedData = jwt.verify(token, process.env.JWT_SECRET);
 
     req.user = await User.findById(decodedData.id); //req.user is any js object consisting of all details of an user
-
-    console.log(req.user);
 
     next();
 });
@@ -39,6 +38,6 @@ exports.isAuthenticatedAdmin = AsyncErrors(async (req, res, next) => {
     req.admin = await Admin.findById(decodeData.id);
 
     // console.log('req.admin', req.admin);
-    
+
     next();
 });

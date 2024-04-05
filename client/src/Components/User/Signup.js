@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { signup } from "../../Actions/actions";
+import { signup } from "../../Actions/userActions";
 import image1 from "../../Assets/image1.png";
 import image2 from "../../Assets/image2.png";
 import google_logo from "../../Assets/google_logo.png";
