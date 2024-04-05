@@ -183,10 +183,12 @@ exports.updatePassword = asyncErrors(async (req, res, next) => {
 });
 
 exports.userProfile = asyncErrors(async (req, res, next) => {
-    let username = req.params.username;
+    //let username = req.params.username;
 
     // Find the user by username
-    const user = await User.findOne({ name: username });
+    console.log(req.user._id)
+
+    const user = await User.findById(req.user._id)
 
     // If no user is found, pass an error to the error handling middleware
     if (!user) {
@@ -195,7 +197,7 @@ exports.userProfile = asyncErrors(async (req, res, next) => {
     }
 
     // If user is found, log an info message
-    logger.info(`User profile retrieved for username: ${username}`);
+    logger.info(`User profile retrieved for username`);
 
     // If user is found, return user profile
     res.status(200).json({ success: true, user });

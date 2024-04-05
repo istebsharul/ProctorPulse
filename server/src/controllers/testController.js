@@ -326,3 +326,92 @@ exports.testUserResponses = asyncErrors(async (req, res, next) => {
         response,
     });
 });
+
+exports.submitTest = asyncErrors(async (req, res, next) => {
+    const userId = req.params.userId;
+    const testId = req.params.testId;
+    const { answers } = req.body;
+    console.log(answers);
+
+    // Validate request body schema
+    if (!answers || !Array.isArray(answers) || answers.length === 0) {
+        const message = 'Invalid request body. Missing or empty answers array.';
+        logger.error(message);
+        const response = new ApiResponse(400, null, message);
+        return res.status(400).json(response);
+    }
+
+    // Validate userId and testId
+    if (!isValidObjectId(userId)) {
+        const message = `UserId ${userId} is not valid.`;
+        logger.error(message);
+        const response = new ApiResponse(400, null, message);
+        return res.status(400).json(response);
+    }
+    if (!isValidObjectId(testId)) {
+        const message = `TestId ${testId} is not valid.`;
+        logger.error(message);
+        const response = new ApiResponse(400, null, message);
+        return res.status(400).json(response);
+    }
+
+    // Check if user and test exist
+    const userExists = await isIdExists(User, userId);
+    const testExists = await isIdExists(Test, testId);
+
+    if (!userExists) {
+        const message = `User with userId ${userId} does not exist.`;
+        logger.error(message);
+        const response = new ApiResponse(400, null, message);
+        return res.status(400).json(response);
+    }
+    if (!testExists) {
+        const message = `Test with testId ${testId} does not exist.`;
+        logger.error(message);
+        const response = new ApiResponse(400, null, message);
+        return res.status(400).json(response);
+    }
+
+    try {
+        // Check if timer is zero
+        const testDetails = await Test.findById(testId);
+        if (testDetails && testDetails.timer === 0) {
+            // Auto-submit if timer is zero
+            const submission = new TestSubmission({
+                userId,
+                testId,
+                answers,
+                submittedAt: new Date(),
+            });
+            await submission.save();
+
+            // Return success response
+            const response = new ApiResponse(200, {
+                message: 'Test submitted successfully.',
+            });
+            return res.status(200).json(response);
+        } else {
+            // Process submitted answers and save to the database
+            // Implementation depends on your data model and business logic
+
+            // Example: Saving answers to a database
+            const submission = new TestSubmission({
+                userId,
+                testId,
+                answers,
+                submittedAt: new Date(),
+            });
+            await submission.save();
+
+            // Return success response
+            const response = new ApiResponse(200, {
+                message: 'Test submitted successfully.',
+            });
+            return res.status(200).json(response);
+        }
+    } catch (err) {
+        // Handle errors
+        logger.error(`Failed to submit test: ${err.message}`);
+        return next(err);
+    }
+});

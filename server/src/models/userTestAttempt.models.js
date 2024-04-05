@@ -29,6 +29,17 @@ const userTestAttemptSchema = new Schema(
             type: Number,
             required: true,
         },
+        user_response:[{
+            question_id: {
+                type: Schema.Types.ObjectId,
+                ref: 'Question',
+                required: true,
+            },
+            user_answer: {
+                type: String,
+                required: true,
+            }
+        }],
     },
     { timestamps: true }
 );
