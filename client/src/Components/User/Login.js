@@ -1,7 +1,7 @@
 // Login.js
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "../../Actions/actions";
+import { login } from "../../Actions/userActions";
 import image1 from "../../Assets/image1.png";
 import image2 from "../../Assets/image2.png";
 
