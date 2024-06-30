@@ -1,6 +1,5 @@
 import React from "react";
-import Forgotpassword from "../User/Forgotpassword";
-import Navbar from "../Navbar/Navbar";
+import Forgotpassword from "../Components/User/Forgotpassword";
 
 function ForgotpasswordPage() {
   return (
