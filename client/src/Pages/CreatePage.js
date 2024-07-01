@@ -1,5 +1,5 @@
 import React from "react";
-import CreateTest from "../User/CreateTest";
+import CreateTest from "../Components/Tests/CreateTest";
 
 function CreatePage() {
   return (
