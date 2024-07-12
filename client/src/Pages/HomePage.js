@@ -1,7 +1,5 @@
 import React from "react";
-import Home from "../User/Home";
-import Navbar from "../Navbar/Navbar";
-import CreateTest from "../User/CreateTest";
+import Home from "../Components/User/Home";
 
 function HomePage() {
   return (

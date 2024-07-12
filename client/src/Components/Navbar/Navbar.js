@@ -1,8 +1,63 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FaBars, FaTimes, FaUser } from "react-icons/fa"; // Importing FontAwesome icons
+import axios from "axios";
 import logo from "../../Assets/logo.png";
 
 const Navbar = () => {
+  const [open, setOpen] = useState(false);
+  const [userDropdown, setUserDropdown] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Initially not logged in
+  const [username, setUsername] = useState(""); // To store username
+  const dropdownRef = useRef(null); // Ref for the dropdown element
+
+  useEffect(() => {
+    // Function to fetch user profile info
+    const fetchUserProfile = async () => {
+      try {
+        const response = await axios.get('/api/user/profile');
+        setUsername(response.data.user.name); // Assuming 'name' is a property of user object
+        setIsLoggedIn(true); // Update login status to true if user data is fetched successfully
+      } catch (error) {
+        // Handle error (e.g., user not authenticated)
+        setIsLoggedIn(false);
+        setUsername("");
+        console.error('Error fetching user profile:', error.message);
+      }
+    };
+
+    fetchUserProfile(); // Call the function when component mounts
+  }, []);
+
+  // Effect to add event listener when component mounts
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Close dropdown if clicked outside
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setUserDropdown(false);
+      }
+    };
+
+    // Add event listener
+    window.addEventListener("click", handleClickOutside);
+
+    // Clean up function to remove event listener
+    return () => {
+      window.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
+
+  const toggleUserDropdown = () => {
+    setUserDropdown(!userDropdown);
+  };
+
+  const handleLogout = () => {
+    // Implement logout functionality (clear cookies, etc.)
+    // For demonstration, we're just updating state here
+    
+    setIsLoggedIn(false);
+    setUsername("");
+  };
+
   let Links = [
     { name: "HOME", link: "/" },
     { name: "SERVICE", link: "/" },
@@ -10,14 +65,13 @@ const Navbar = () => {
     { name: "BLOG'S", link: "/" },
     { name: "CONTACT", link: "/" },
   ];
-  let [open, setOpen] = useState(false);
 
   return (
     <div className="shadow-md w-full fixed md:py-1 md:px-10 bg-white font flex justify-center z-50">
       <div className="md:w-4/5 flex items-center justify-between bg-white px-3">
         <div className="md:w-1/5 w-2/3 font-bold text-2xl cursor-pointer flex items-center text-gray-800">
           <a href="/">
-            <img className="md:w-4/5" src={logo}></img>
+            <img className="md:w-4/5" src={logo} alt="logo"></img>
           </a>
         </div>
 
@@ -44,10 +98,34 @@ const Navbar = () => {
             </li>
           ))}
 
-          <li className="md:px-8 md:py-0 py-3">
-            <a href="/login">
+          <li className="md:px-8 md:py-0 py-3 relative" ref={dropdownRef}>
+            <div onClick={toggleUserDropdown} className="cursor-pointer">
               <FaUser />
-            </a>
+            </div>
+            {userDropdown && (
+              <div className="absolute right-0 mt-2 w-48 bg-white shadow-md rounded-lg">
+                {isLoggedIn ? (
+                  <>
+                    <div className="px-4 py-2 border-b text-gray-700">
+                      {username}
+                    </div>
+                    <div
+                      className="px-4 py-2 text-gray-700 cursor-pointer hover:bg-gray-100"
+                      onClick={handleLogout}
+                    >
+                      Logout
+                    </div>
+                  </>
+                ) : (
+                  <a
+                    href="/login"
+                    className="block px-4 py-2 text-gray-700 cursor-pointer hover:bg-gray-100"
+                  >
+                    Login
+                  </a>
+                )}
+              </div>
+            )}
           </li>
         </ul>
       </div>

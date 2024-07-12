@@ -11,12 +11,13 @@ function Signup() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [userType, setUserType] = useState("");
   const [name, setName] = useState("");
+  const [organisation,setOrganisation] = useState("");
   const dispatch = useDispatch();
   const error = useSelector((state) => state.error);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(signup(name, email, password, userType));
+    dispatch(signup(name, email, password, userType,organisation));
   };
 
   return (
@@ -83,6 +84,13 @@ function Signup() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full border border-gray-300 rounded-2xl px-5 py-2.5 focus:outline-none focus:border-purple-500"
+            />
+            <input
+              type="text"
+              placeholder="Organisation/School"
+              value={organisation}
+              onChange={(e) => setOrganisation(e.target.value)}
+              className="w-full border border-gray-300 rounded-2xl px-5 py-3 focus:outline-none focus:border-purple-500"
             />
             <input
               type="password"

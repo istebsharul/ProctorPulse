@@ -86,6 +86,25 @@ exports.profileAdmin = asyncErrors(async (req, res, next) => {
     res.status(200).json({ success: true, admin });
 });
 
+exports.adminProfile = asyncErrors(async(req,res,next)=>{
+     // Find the user by username
+     console.log(req.admin._id)
+
+     const admin = await Admin.findById(req.admin._id)
+ 
+     // If no user is found, pass an error to the error handling middleware
+     if (!admin) {
+         logger.error('Admin not found');
+         return res.status(404).json({ message: 'Admin not found' });
+     }
+ 
+     // If user is found, log an info message
+     logger.info(`Admin profile retrieved for username`);
+ 
+     // If user is found, return user profile
+     res.status(200).json({ success: true, admin });
+})
+
 // Update admin profile
 exports.updateProfileAdmin = asyncErrors(async (req, res, next) => {
     const { name, email } = req.body;

@@ -221,26 +221,30 @@ exports.deleteTest = asyncErrors(async (req, res, next) => {
 });
 
 exports.createTest = asyncErrors(async (req, res, next) => {
-    const { name, subject, date, duration, questions, allowedUsers } = req.body;
+    const { testName, subject, duration, questions, allowedUsers } = req.body;
 
     const questionIds = [];
+
+    console.log(questions);
 
     for (const questionData of questions) {
         const response = await createQuestion({ body: questionData });
 
         if (response && response._id) {
+            // console.log("hello",response._id);
             questionIds.push(response._id);
+            // console.log("Questions Id", questionIds);
         } else {
             const errorMessage = 'Failed to create question';
             logger.error(errorMessage);
             return next(new Error(errorMessage));
         }
     }
+    console.log("name:",testName, "subject:",subject,"duration:", duration,"questions:", questions,"allowed Users:", allowedUsers,)
 
     const newTest = new Test({
-        name,
+        testName,
         subject,
-        date,
         duration,
         questions: questionIds,
         users: allowedUsers,

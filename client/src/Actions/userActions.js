@@ -1,4 +1,5 @@
 import axios from "axios";
+import toast from 'react-hot-toast';
 import {
   LOGIN_SUCCESS,
   LOGIN_FAILURE,
@@ -19,17 +20,22 @@ const setCookie = (name, value, days) => {
   document.cookie = name + "=" + value + ";" + expires + ";path=/";
 };
 
-export const login = (email, password) => {
+export const login = (email, password,userType) => {
   return async (dispatch) => {
     try {
       // Simulate API call for login
+      const endpoint = userType === 'teacher' ? 'api/admin/login' : 'api/user/login'
+
       const response = await axios.post(
-        "/api/user/login",
+        endpoint,
         { email, password }
       );
 
       const token = response.data.token;
+      toast.success("Login Successful");
+      console.log("Login Successful");
       setCookie("jwt", token, 1); // Set cookie expiry for 1 day
+      
       // console.log(token);
       dispatch({ type: LOGIN_SUCCESS, payload: response.data });
     } catch (error) {
@@ -40,8 +46,6 @@ export const login = (email, password) => {
 
 export const load = () => async (dispatch) => {
   try {
-    
-    
     const { data } = await axios.get(
       "/api/user/profile"
     );
@@ -52,16 +56,23 @@ export const load = () => async (dispatch) => {
   }
 };
 
-export const signup = (name, email, password) => {
+export const signup = (name, email, password,userType,organisation) => {
   return async (dispatch) => {
     try {
+      console.log(name,email,password,userType,organisation);
       // Simulate API call for signup
+
+      const endpoint = userType === 'teacher' ? 'api/admin/register':'api/user/register';
+
       const response = await axios.post(
-        "/api/user/register",
-        { name, email, password }
+        endpoint,
+        { name, email, password,organisation }
       );
+      console.log("Response",response);
+      toast.success('User Created Successfully');
       dispatch({ type: SIGNUP_SUCCESS, payload: response.data });
     } catch (error) {
+      toast.error(error.message);
       dispatch({ type: SIGNUP_FAILURE, payload: error.message });
     }
   };

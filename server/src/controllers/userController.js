@@ -35,6 +35,8 @@ exports.registerUser = asyncErrors(async (req, res, next) => {
  * @param {Function} next - The next middleware function in the chain.
  * @returns {Promise<void>} - A Promise that resolves after the user is authenticated.
  */
+
+
 exports.loginUser = asyncErrors(async (req, res, next) => {
     const { email, password } = req.body;
 
