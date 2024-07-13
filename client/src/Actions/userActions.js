@@ -5,20 +5,22 @@ import {
   LOGIN_FAILURE,
   SIGNUP_SUCCESS,
   SIGNUP_FAILURE,
-  LOGOUT,
   FORGOT_PASSWORD_SUCCESS,
   FORGOT_PASSWORD_FAILURE,
   LOAD_FAILURE,
-  LOAD_SUCCESS
+  LOAD_SUCCESS,
+  LOGOUT_SUCCESS,
+  LOGOUT_FAILURE,
 } from "../Constants/userConstant";
+import Cookies from 'js-cookie';
 
 // Function to set cookie
-const setCookie = (name, value, days) => {
-  const date = new Date();
-  date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-  const expires = "expires=" + date.toUTCString();
-  document.cookie = name + "=" + value + ";" + expires + ";path=/";
-};
+// const setCookie = (name, value, days) => {
+//   const date = new Date();
+//   date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+//   const expires = "expires=" + date.toUTCString();
+//   document.cookie = name + "=" + value + ";" + expires + ";path=/";
+// };
 
 export const login = (email, password,userType) => {
   return async (dispatch) => {
@@ -31,11 +33,10 @@ export const login = (email, password,userType) => {
         { email, password }
       );
 
-      const token = response.data.token;
+      // const token = response.data.token;
       toast.success("Login Successful");
       console.log("Login Successful");
-      setCookie("jwt", token, 1); // Set cookie expiry for 1 day
-      
+      // setCookie("jwt", token, 1); /// Set cookie expiry for 1 day
       // console.log(token);
       dispatch({ type: LOGIN_SUCCESS, payload: response.data });
     } catch (error) {
@@ -79,8 +80,20 @@ export const signup = (name, email, password,userType,organisation) => {
 };
 
 export const logout = () => {
-  return { type: LOGOUT };
-};
+  return (dispatch) => {
+    try {
+      // Remove the JWT token from cookies
+      Cookies.remove('token');
+      Cookies.remove('jwt');
+
+      // Dispatch the logout success action
+      dispatch({ type: LOGOUT_SUCCESS });
+    } catch (error) {
+      // Dispatch the logout failure action
+      dispatch({ type: LOGOUT_FAILURE, payload: error.message });
+    }
+  };
+}
 
 export const forgotPassword = (email) => {
   return async (dispatch) => {

@@ -3,7 +3,8 @@ import {
     LOGIN_FAILURE,
     SIGNUP_SUCCESS,
     SIGNUP_FAILURE,
-    LOGOUT,
+    LOGOUT_SUCCESS,
+    LOGOUT_FAILURE,
     FORGOT_PASSWORD_SUCCESS,
     FORGOT_PASSWORD_FAILURE,
     LOAD_FAILURE,
@@ -33,11 +34,19 @@ const authReducer = (state = initialState, action) => {
                 error: action.payload,
                 isAuthenticated: false
             };
-        case LOGOUT:
+        case LOGOUT_FAILURE:
+            return {
+                ...state,
+                user: null,
+                error: action.payload,
+                isAuthenticated: false
+            };
+        case LOGOUT_SUCCESS:
             return {
                 ...state,
                 user: null,
                 error: null,
+                isAuthenticated: false,
             };
         case FORGOT_PASSWORD_SUCCESS:
             return {

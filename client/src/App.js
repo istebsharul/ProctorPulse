@@ -4,7 +4,6 @@ import {
     Routes,
     Route,
 } from 'react-router-dom';
-import { Provider } from 'react-redux';
 import store from './Store/store';
 import LoginPage from './Pages/LoginPage';
 import SignupPage from './Pages/SignupPage';
@@ -14,6 +13,7 @@ import ProtectedRoute from './Utils/ProtectedRoute';
 import CreateTestPage from './Pages/CreateTestPage';
 import { load } from './Actions/userActions';
 import { Toaster } from 'react-hot-toast';
+import Profile from './Pages/Profile';
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(true);
@@ -26,36 +26,37 @@ function App() {
     }, []);
 
     return (
-        <Provider store={store}>
-            <Toaster
-                position="top-center"
-                reverseOrder={false}
-            />
-            <div className="font-[Poppins]">
-                <Router>
-                    <Routes>
-                        <Route exact path="/" element={<HomePage />} />
-                        <Route
-                            exact
-                            path="/login"
-                            element={<LoginPage updateStatus={updateStatus} />}
-                        />
-                        <Route exact path="/signup" element={<SignupPage />} />
-                        <Route
-                            exact
-                            path="/forgotpassword"
-                            element={<ForgotpasswordPage />}
-                        />
-                        <Route
-                            element={<ProtectedRoute isLoggedIn={isLoggedIn} />}
-                        >
-                            <Route path="/home" element={<HomePage />} />
-                            <Route path="/create" element={<CreateTestPage />} />
-                        </Route>
-                    </Routes>
-                </Router>
-            </div>
-        </Provider>
+        <>
+                <Toaster
+                    position="top-center"
+                    reverseOrder={false}
+                />
+                <div className="font-[Poppins]">
+                    <Router>
+                        <Routes>
+                            <Route exact path="/" element={<HomePage />} />
+                            <Route
+                                exact
+                                path="/login"
+                                element={<LoginPage updateStatus={updateStatus} />}
+                            />
+                            <Route exact path="/signup" element={<SignupPage />} />
+                            <Route
+                                exact
+                                path="/forgotpassword"
+                                element={<ForgotpasswordPage />}
+                            />
+                            <Route
+                                element={<ProtectedRoute isLoggedIn={isLoggedIn} />}
+                            >
+                                <Route path="/home" element={<HomePage />} />
+                                <Route path="/create" element={<CreateTestPage />} />
+                                <Route path="/profile" element={<Profile />} />
+                            </Route>
+                        </Routes>
+                    </Router>
+                </div>
+        </>
     );
 }
 

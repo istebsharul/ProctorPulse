@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaBars, FaTimes, FaUser } from "react-icons/fa"; // Importing FontAwesome icons
-import axios from "axios";
 import logo from "../../Assets/logo.png";
+import { useSelector } from "react-redux";
+import { logout } from "../../Actions/userActions";
+import { useDispatch } from 'react-redux';
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -9,13 +11,17 @@ const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Initially not logged in
   const [username, setUsername] = useState(""); // To store username
   const dropdownRef = useRef(null); // Ref for the dropdown element
+  const currentUser = useSelector(state=>state.auth.user);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    // Function to fetch user profile info
+    console.log("currentUser",currentUser);
+    // Function to fetch user profile info from backend
     const fetchUserProfile = async () => {
       try {
-        const response = await axios.get('/api/user/profile');
-        setUsername(response.data.user.name); // Assuming 'name' is a property of user object
+        if(currentUser){
+          setUsername(currentUser.name);
+        }
         setIsLoggedIn(true); // Update login status to true if user data is fetched successfully
       } catch (error) {
         // Handle error (e.g., user not authenticated)
@@ -26,7 +32,7 @@ const Navbar = () => {
     };
 
     fetchUserProfile(); // Call the function when component mounts
-  }, []);
+  }, [currentUser]);
 
   // Effect to add event listener when component mounts
   useEffect(() => {
@@ -54,6 +60,7 @@ const Navbar = () => {
     // Implement logout functionality (clear cookies, etc.)
     // For demonstration, we're just updating state here
     
+    dispatch(logout());
     setIsLoggedIn(false);
     setUsername("");
   };
@@ -83,9 +90,8 @@ const Navbar = () => {
         </div>
 
         <ul
-          className={`md:flex md:items-center md:pb-0 pb-0 absolute md:static bg-white md:z-auto z-[-1] right-0 w-full md:w-auto md:pl-0 pl-9 transition-all duration-500 ease-in ${
-            open ? "top-12 " : "top-[-450px]"
-          }`}
+          className={`md:flex md:items-center md:pb-0 pb-0 absolute md:static bg-white md:z-auto z-[-1] right-0 w-full md:w-auto md:pl-0 pl-9 transition-all duration-500 ease-in ${open ? "top-12 " : "top-[-450px]"
+            }`}
         >
           {Links.map((link) => (
             <li key={link.name} className="md:ml-8 md:my-0 my-7">
@@ -114,6 +120,14 @@ const Navbar = () => {
                       onClick={handleLogout}
                     >
                       Logout
+                    </div>
+                    <div>
+                      <a
+                        href="/profile"
+                        className="block px-4 py-2 text-gray-700 cursor-pointer hover:bg-gray-100"
+                      >
+                        Profile
+                      </a>
                     </div>
                   </>
                 ) : (
