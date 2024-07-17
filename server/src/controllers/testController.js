@@ -243,7 +243,7 @@ exports.createTest = asyncErrors(async (req, res, next) => {
     console.log("name:",testName, "subject:",subject,"duration:", duration,"questions:", questions,"allowed Users:", allowedUsers,)
 
     const newTest = new Test({
-        testName,
+        name:testName,
         subject,
         duration,
         questions: questionIds,

@@ -45,13 +45,26 @@ export const login = (email, password,userType) => {
   };
 };
 
-export const load = () => async (dispatch) => {
+export const loadUser = () => async (dispatch) => {
   try {
     const { data } = await axios.get(
-      "/api/user/profile"
+      "api/user/profile"
     );
-
+    
     dispatch({ type: LOAD_SUCCESS, payload: data.user });
+  } catch (error) {
+    dispatch({ type: LOAD_FAILURE, payload: error.response.data.message });
+  }
+};
+
+
+export const loadAdmin = () => async (dispatch) => {
+  try {
+    const { data } = await axios.get(
+      "api/admin/profile"
+    );
+    
+    dispatch({ type: LOAD_SUCCESS, payload: data.admin });
   } catch (error) {
     dispatch({ type: LOAD_FAILURE, payload: error.response.data.message });
   }

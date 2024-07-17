@@ -11,30 +11,31 @@ import ForgotpasswordPage from './Pages/ForgotpasswordPage';
 import HomePage from './Pages/HomePage';
 import ProtectedRoute from './Utils/ProtectedRoute';
 import CreateTestPage from './Pages/CreateTestPage';
-import { load } from './Actions/userActions';
+import { load, loadAdmin, loadUser } from './Actions/userActions';
 import { Toaster } from 'react-hot-toast';
 import Profile from './Pages/Profile';
 
 function App() {
-    const [isLoggedIn, setIsLoggedIn] = useState(true);
-
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    
     const updateStatus = () => {
         setIsLoggedIn((prev) => !prev);
     };
     useEffect(() => {
-        store.dispatch(load());
+        store.dispatch(loadUser());
+        store.dispatch(loadAdmin());
     }, []);
 
     return (
         <>
-                <Toaster
-                    position="top-center"
-                    reverseOrder={false}
-                />
-                <div className="font-[Poppins]">
-                    <Router>
-                        <Routes>
-                            <Route exact path="/" element={<HomePage />} />
+            <Toaster
+                position="top-center"
+                reverseOrder={false}
+            />
+            <div className="font-[Poppins]">
+                <Router>
+                    <Routes>
+                        <Route exact path="/" element={<HomePage />} />
                             <Route
                                 exact
                                 path="/login"
