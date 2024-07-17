@@ -9,12 +9,14 @@ const {
     forgotPassword,
     resetPassword,
     updatePassword,
+    logOutUser,
 } = require('../controllers/userController');
 
 const router = express.Router();
 
 router.route('/register').post(registerUser);
 router.route('/login').post(loginUser);
+router.route('/logout').get(logOutUser);
 router.route('/profile').get(isAuthenticatedUser,userProfile);
 router.route('/profile/update').put(isAuthenticatedUser, updateProfile);
 router.route('/password/forgot').post(forgotPassword);

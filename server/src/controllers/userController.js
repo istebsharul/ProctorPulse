@@ -36,7 +36,6 @@ exports.registerUser = asyncErrors(async (req, res, next) => {
  * @returns {Promise<void>} - A Promise that resolves after the user is authenticated.
  */
 
-
 exports.loginUser = asyncErrors(async (req, res, next) => {
     const { email, password } = req.body;
 
@@ -66,6 +65,18 @@ exports.loginUser = asyncErrors(async (req, res, next) => {
 
     logger.info(`User with email ${email} logged in successfully`);
     sendToken(user, 200, res);
+});
+
+//log out
+exports.logOutUser = asyncErrors(async (req, res, next) => {
+    res.cookie('token', null, {
+        expires: new Date(Date.now()),
+        httpOnly: true,
+    });
+    res.status(200).json({
+        success: true,
+        message: 'logged out successfully',
+    });
 });
 
 //forgot password
@@ -188,9 +199,9 @@ exports.userProfile = asyncErrors(async (req, res, next) => {
     //let username = req.params.username;
 
     // Find the user by username
-    console.log(req.user._id)
+    console.log(req.user._id);
 
-    const user = await User.findById(req.user._id)
+    const user = await User.findById(req.user._id);
 
     // If no user is found, pass an error to the error handling middleware
     if (!user) {
