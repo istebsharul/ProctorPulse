@@ -93,7 +93,7 @@ exports.forgotPassword = asyncErrors(async (req, res, next) => {
     await user.save({ validateBeforeSave: false }); //in getResetPasswordtoken() we are changing some variables of user, those are needed to be updated in the database
 
     const host = req.get('host').split('/')[0]; // Extract only the host part, removing any additional path segments
-    const resetPasswordUrl = `${req.protocol}://${host}/password/reset/${resetToken}`;
+    const resetPasswordUrl = `${req.protocol}://localhost:3000/password/reset/${resetToken}`;
 
     console.log(`${host}`);
 
@@ -127,9 +127,6 @@ exports.forgotPassword = asyncErrors(async (req, res, next) => {
 exports.resetPassword = asyncErrors(async (req, res, next) => {
     //console.log(req.params.token)
     logger.info(`Reset password token received: ${req.params.token}`);
-    logger.info("password",req.body.password);
-    logger.info("confirmPassword", req.body.confirmPassword);
-
 
     // Hash the reset password token
     const resetPasswordToken = crypto

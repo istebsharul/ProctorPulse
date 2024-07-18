@@ -169,9 +169,7 @@ exports.forgotPasswordAdmin = asyncErrors(async (req, res, next) => {
     await admin.save({ validateBeforeSave: false });
 
     // Construct reset password URL
-    const resetPasswordUrl = `${req.protocol}://${req.get(
-        'host'
-    )}/password/reset/${resetToken}`;
+    const resetPasswordUrl = `${req.protocol}://localhost:3000/password/reset/${resetToken}`;
 
     // Compose email message
     const message = `Follow the url to reset your password : \n\n ${resetPasswordUrl} \n\n If u haven't requested it , ignore it `;
@@ -212,8 +210,6 @@ exports.forgotPasswordAdmin = asyncErrors(async (req, res, next) => {
 exports.resetPasswordAdmin = asyncErrors(async (req, res, next) => {
     // Log reset password token received
     logger.info(`Reset password token received for Admin: ${req.params.token}`);
-    logger.info("password",req.body.password);
-    logger.info("confirmPassword", req.body.confirmPassword);
 
     // Hash reset token
     const resetPasswordToken = crypto
