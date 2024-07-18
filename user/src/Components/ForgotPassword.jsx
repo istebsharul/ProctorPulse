@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { forgotPassword } from "../../Actions/userActions";
-import image1 from "../../Assets/image1.png";
-import image2 from "../../Assets/image2.png";
+import { forgotPassword } from "../Actions/userActions";
+import image1 from "../Assets/image1.png";
+import image2 from "../Assets/image2.png";
 
-function Forgotpassword() {
+function ForgotPassword() {
   const [email, setEmail] = useState("");
   const dispatch = useDispatch();
   const error = useSelector((state) => state.error);
@@ -13,12 +13,13 @@ function Forgotpassword() {
     e.preventDefault();
     dispatch(forgotPassword(email));
   };
+  
   return (
     <>
       <div className="flex flex-wrap justify-center items-center bg-purple-200">
         <div className="w-full md:w-2/5 flex justify-center items-center p-5">
-          <img className="w-2/4" src={image1} alt="" />
-          {/* <img className="w-1/3" src={image2} alt="" /> */}
+          <img className="w-1/3" src={image1} alt="" />
+          <img className="w-1/3" src={image2} alt="" />
         </div>
         <div className="w-full md:w-3/5 md:h-screen rounded-tl-3xl rounded-bl-3xl bg-white flex justify-center items-center">
           {error && <p className="text-red-500 mb-4">{error}</p>}
@@ -63,4 +64,4 @@ function Forgotpassword() {
   );
 }
 
-export default Forgotpassword;
+export default ForgotPassword;

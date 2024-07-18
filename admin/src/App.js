@@ -1,62 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import {
-    BrowserRouter as Router,
-    Routes,
-    Route,
-} from 'react-router-dom';
-import store from './Store/store';
-import LoginPage from './Pages/LoginPage';
-import SignupPage from './Pages/SignupPage';
-import ForgotpasswordPage from './Pages/ForgotpasswordPage';
-import HomePage from './Pages/HomePage';
-import ProtectedRoute from './Utils/ProtectedRoute';
-import CreateTestPage from './Pages/CreateTestPage';
-import { load, loadAdmin, loadUser } from './Actions/userActions';
-import { Toaster } from 'react-hot-toast';
-import Profile from './Pages/Profile';
+import { Toaster } from "react-hot-toast";
+import './App.css';
+import { useEffect } from "react";
+import { loadAdmin } from "./Actions/userActions";
+import store from "./Store/store";
+import { useSelector } from "react-redux";
+// import TestPage from "./Pages/TestPage";
 
 function App() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    
-    const updateStatus = () => {
-        setIsLoggedIn((prev) => !prev);
-    };
+    const isLoggedIn = useSelector(state => state.auth.isAuthenticated);
+
     useEffect(() => {
-        store.dispatch(loadUser());
+        console.log("Authenticated - App", isLoggedIn);
         store.dispatch(loadAdmin());
-    }, []);
+    }, [isLoggedIn]);
 
     return (
         <>
-            <Toaster
-                position="top-center"
-                reverseOrder={false}
-            />
-            <div className="font-[Poppins]">
-                <Router>
-                    <Routes>
-                        <Route exact path="/" element={<HomePage />} />
-                            <Route
-                                exact
-                                path="/login"
-                                element={<LoginPage updateStatus={updateStatus} />}
-                            />
-                            <Route exact path="/signup" element={<SignupPage />} />
-                            <Route
-                                exact
-                                path="/forgotpassword"
-                                element={<ForgotpasswordPage />}
-                            />
-                            <Route
-                                element={<ProtectedRoute isLoggedIn={isLoggedIn} />}
-                            >
-                                <Route path="/home" element={<HomePage />} />
-                                <Route path="/create" element={<CreateTestPage />} />
-                                <Route path="/profile" element={<Profile />} />
-                            </Route>
-                        </Routes>
-                    </Router>
-                </div>
+            <Toaster position="top-center" reverseOrder={false} />
+            <div className="App">
+            </div>
         </>
     );
 }

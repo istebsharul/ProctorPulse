@@ -4,15 +4,17 @@ import logo from "../../Assets/logo.png";
 import { useSelector } from "react-redux";
 import { logout } from "../../Actions/userActions";
 import { useDispatch } from 'react-redux';
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [userDropdown, setUserDropdown] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Initially not logged in
   const [username, setUsername] = useState(""); // To store username
   const dropdownRef = useRef(null); // Ref for the dropdown element
   const currentUser = useSelector(state=>state.auth.user);
   const dispatch = useDispatch();
+  const isLoggedIn = useSelector(state => state.auth.isAuthenticated);
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log("currentUser",currentUser);
@@ -22,10 +24,8 @@ const Navbar = () => {
         if(currentUser){
           setUsername(currentUser.name);
         }
-        setIsLoggedIn(true); // Update login status to true if user data is fetched successfully
       } catch (error) {
         // Handle error (e.g., user not authenticated)
-        setIsLoggedIn(false);
         setUsername("");
         console.error('Error fetching user profile:', error.message);
       }
@@ -59,11 +59,13 @@ const Navbar = () => {
   const handleLogout = () => {
     // Implement logout functionality (clear cookies, etc.)
     // For demonstration, we're just updating state here
-    
     dispatch(logout());
-    setIsLoggedIn(false);
     setUsername("");
   };
+
+  const handleProfile = () => {
+    navigate('/profile');
+  }
 
   let Links = [
     { name: "HOME", link: "/" },
@@ -121,13 +123,8 @@ const Navbar = () => {
                     >
                       Logout
                     </div>
-                    <div>
-                      <a
-                        href="/profile"
-                        className="block px-4 py-2 text-gray-700 cursor-pointer hover:bg-gray-100"
-                      >
-                        Profile
-                      </a>
+                    <div onClick={handleProfile} className="block px-4 py-2 text-gray-700 cursor-pointer hover:bg-gray-100">
+                      Profile
                     </div>
                   </>
                 ) : (

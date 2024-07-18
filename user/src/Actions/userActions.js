@@ -12,8 +12,9 @@ import {
     LOAD_SUCCESS,
     LOGOUT_SUCCESS,
     LOGOUT_FAILURE,
+    RESET_PASSWORD_SUCCESS,
+    RESET_PASSWORD_FAILURE,
 } from '../Constants/userConstants';
-import Cookies from 'js-cookie';
 
 // Function to set cookie
 const setCookie = (name, value, days) => {
@@ -23,11 +24,11 @@ const setCookie = (name, value, days) => {
   document.cookie = name + "=" + value + ";" + expires + ";path=/";
 };
 
-export const login = (email, password, userType) => {
+export const login = (email, password) => {
     return async (dispatch) => {
         try {
             // Simulate API call for login
-            const endpoint = userType === 'teacher' ? 'api/admin/login' : 'api/user/login'
+            const endpoint = 'api/user/login';
 
             const response = await axios.post(
                 endpoint,
@@ -37,10 +38,11 @@ export const login = (email, password, userType) => {
             const token = response.data.token;
             toast.success("Login Successful");
             console.log("Login Successful");
-            setCookie("jwt", token, 1); /// Set cookie expiry for 1 day
+            setCookie("jwt", token, 1); // Set cookie expiry for 1 day
             console.log(token);
             dispatch({ type: LOGIN_SUCCESS, payload: response.data });
         } catch (error) {
+            toast.error('Login Failed: ' + error.message);
             dispatch({ type: LOGIN_FAILURE, payload: error.message });
         }
     };
@@ -51,13 +53,14 @@ export const loadUser = () => async (dispatch) => {
         const { data } = await axios.get(
             "api/user/profile"
         );
-        console.log("data retrieved using loadUser",data);
+        console.log("data retrieved using loadUser", data);
+        toast.success('User data loaded successfully');
         dispatch({ type: LOAD_SUCCESS, payload: data.user });
     } catch (error) {
+        // toast.error('Failed to load user data: ' + error.response.data.message);
         dispatch({ type: LOAD_FAILURE, payload: error.response.data.message });
     }
 };
-
 
 export const signup = (name, email, password, userType, organisation) => {
     return async (dispatch) => {
@@ -75,39 +78,63 @@ export const signup = (name, email, password, userType, organisation) => {
             toast.success('User Created Successfully');
             dispatch({ type: SIGNUP_SUCCESS, payload: response.data });
         } catch (error) {
-            toast.error(error.message);
+            toast.error('Signup Failed: ' + error.message);
             dispatch({ type: SIGNUP_FAILURE, payload: error.message });
         }
     };
 };
 
-export const logout = () => {
-    return (dispatch) => {
-        try {
-            // Remove the JWT token from cookies
-            Cookies.remove('token');
-            Cookies.remove('jwt');
+export const logout = () => async (dispatch) => {
+    try {
+      console.log("apple in a day");
+      await axios.get(
+        "/api/user/logout"
+      );
+      toast.success('Logout Successful');
+      dispatch({ type: LOGOUT_SUCCESS });
+    } catch (error) {
+      toast.error('Logout Failed: ' + error.message);
+      dispatch({ type: LOGOUT_FAILURE, payload: error.message });
+    }
+};
 
-            // Dispatch the logout success action
-            dispatch({ type: LOGOUT_SUCCESS });
-        } catch (error) {
-            // Dispatch the logout failure action
-            dispatch({ type: LOGOUT_FAILURE, payload: error.message });
-        }
-    };
-}
 
 export const forgotPassword = (email) => {
     return async (dispatch) => {
         try {
-            // Simulate API call for forgot password
-            const response = await axios.post(
-                "/api/user/forgotpassword",
-                { email }
+            const response = await toast.promise(
+                axios.post("/api/user/password/forgot", { email }),
+                {
+                    loading: 'Processing...',
+                    success: 'Reset password link has been sent to your registered email.',
+                    error: 'Error resetting password',
+                }
             );
+
             dispatch({ type: FORGOT_PASSWORD_SUCCESS, payload: response.data });
         } catch (error) {
             dispatch({ type: FORGOT_PASSWORD_FAILURE, payload: error.message });
         }
     };
 };
+
+export const resetPassword = (password,confirmPassword,token) => {
+    return async (dispatch) => {
+        try {
+            console.log("p",password);
+            console.log("cp",confirmPassword);
+            console.log("token",token);
+
+            const response = await axios.put(
+                `http://localhost:4000/api/user/password/reset/${token}`,
+                {password,confirmPassword}
+            );
+            toast.success("Password Reset Successfully");
+            dispatch({type:RESET_PASSWORD_SUCCESS, payload: response.data});
+        } catch (error) {
+            toast.error(error.message);
+            console.log(error.message);
+            dispatch({type:RESET_PASSWORD_FAILURE, payload: error.message});
+        }
+    }
+}

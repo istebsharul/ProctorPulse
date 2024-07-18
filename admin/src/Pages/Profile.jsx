@@ -4,7 +4,7 @@ const Profile = () => {
     const currentUser = useSelector(state => state.auth.user);
 
     return (
-        <div className='bg-red-300'>
+        <div className='w-full h-screen bg-red-300 flex justify-center items-center'>
             {currentUser ? (
                 <div>
                     <h1>Welcome, {currentUser.name}!</h1>

@@ -13,9 +13,9 @@ function Home() {
   }
 
   return (
-    <div className='w-full h-80 pt-20 flex justify-center'>
+    <div className='w-full h-80 pt-20 flex flex-col justify-center'>
       Home
-      <button onClick={handleTestButton}>Go to Test Page</button>
+      <button onClick={handleTestButton}>Go to Test Page</button><br/>
       <button onClick={handleProfileButton}>Profile</button>
     </div>
   );

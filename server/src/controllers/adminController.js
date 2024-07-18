@@ -42,7 +42,7 @@ exports.loginAdmin = asyncErrors(async (req, res, next) => {
     // If admin not found, return error
     if (!admin) {
         logger.error('Admin not found');
-        return next(new ApiResponse(401, null, 'Invalid email and password'));
+        return next(new ApiResponse(401, null, 'Admin not found!'));
     }
     // console.log(admin);
 
@@ -85,6 +85,7 @@ exports.profileAdmin = asyncErrors(async (req, res, next) => {
     // Return admin profile
     res.status(200).json({ success: true, admin });
 });
+
 
 exports.adminProfile = asyncErrors(async(req,res,next)=>{
      // Find the user by username
@@ -184,7 +185,7 @@ exports.forgotPasswordAdmin = asyncErrors(async (req, res, next) => {
         });
 
         // Log successful email sending
-        logger.info(`Email sent Successfully to: ${admin.email}`);
+        logger.info(`Admin Email sent Successfully to: ${admin.email}`);
 
         // Respond with success message
         res.status(201).json({
@@ -210,7 +211,9 @@ exports.forgotPasswordAdmin = asyncErrors(async (req, res, next) => {
 // Controller for handling admin reset password request
 exports.resetPasswordAdmin = asyncErrors(async (req, res, next) => {
     // Log reset password token received
-    logger.info(`Reset password token received: ${req.params.token}`);
+    logger.info(`Reset password token received for Admin: ${req.params.token}`);
+    logger.info("password",req.body.password);
+    logger.info("confirmPassword", req.body.confirmPassword);
 
     // Hash reset token
     const resetPasswordToken = crypto
@@ -226,9 +229,9 @@ exports.resetPasswordAdmin = asyncErrors(async (req, res, next) => {
 
     // If admin not found or token expired, return error
     if (!admin) {
-        logger.error('Reset password token is invalid or has expired');
+        logger.error('Admin Reset password token is invalid or has expired logger');
         return next(
-            new ErrorHandler('Reset password is invalid or has expired', 404)
+            new ErrorHandler('Admin Reset password is invalid or has expired neh', 404)
         );
     }
 
@@ -251,6 +254,8 @@ exports.resetPasswordAdmin = asyncErrors(async (req, res, next) => {
 
     // Send token and respond with success
     sendToken(admin, 200, res);
+
+    // res.status(200).json({message:"Password Reset Successful!"});
 });
 
 // Controller for handling admin update password request

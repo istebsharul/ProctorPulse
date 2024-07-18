@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [userDropdown, setUserDropdown] = useState(false);
-  // const [isLoggedIn, setIsLoggedIn] = useState(false); // Initially not logged in
   const [username, setUsername] = useState(""); // To store username
   const dropdownRef = useRef(null); // Ref for the dropdown element
   const currentUser = useSelector(state=>state.auth.user);

@@ -11,8 +11,9 @@ import {
   LOAD_SUCCESS,
   LOGOUT_SUCCESS,
   LOGOUT_FAILURE,
+  RESET_PASSWORD_SUCCESS,
+  RESET_PASSWORD_FAILURE
 } from "../Constants/userConstant";
-import Cookies from 'js-cookie';
 
 //Function to set cookie
 // const setCookie = (name, value, days) => {
@@ -22,39 +23,28 @@ import Cookies from 'js-cookie';
 //   document.cookie = name + "=" + value + ";" + expires + ";path=/";
 // };
 
-export const login = (email, password,userType) => {
+export const login = (email, password) => {
   return async (dispatch) => {
     try {
       // Simulate API call for login
-      const endpoint = userType === 'teacher' ? 'api/admin/login' : 'api/user/login'
-
+      const endpoint = 'api/admin/login'
       const response = await axios.post(
         endpoint,
         { email, password }
       );
 
-      const token = response.data.token;
+      // const token = response.data.token;
       toast.success("Login Successful");
       console.log("Login Successful");
       // setCookie("jwt", token, 1); /// Set cookie expiry for 1 day
       // console.log(token);
       dispatch({ type: LOGIN_SUCCESS, payload: response.data });
     } catch (error) {
+      console.error(error.response.data.message);
+      toast.error(error.response.data.message);
       dispatch({ type: LOGIN_FAILURE, payload: error.message });
     }
   };
-};
-
-export const loadUser = () => async (dispatch) => {
-  try {
-    const { data } = await axios.get(
-      "api/user/profile"
-    );
-    
-    dispatch({ type: LOAD_SUCCESS, payload: data.user });
-  } catch (error) {
-    dispatch({ type: LOAD_FAILURE, payload: error.response.data.message });
-  }
 };
 
 
@@ -63,7 +53,7 @@ export const loadAdmin = () => async (dispatch) => {
     const { data } = await axios.get(
       "api/admin/profile"
     );
-    
+
     dispatch({ type: LOAD_SUCCESS, payload: data.admin });
   } catch (error) {
     dispatch({ type: LOAD_FAILURE, payload: error.response.data.message });
@@ -73,6 +63,11 @@ export const loadAdmin = () => async (dispatch) => {
 export const signup = (name, email, password,userType,organisation) => {
   return async (dispatch) => {
     try {
+      if (!name || !email || !password || !userType || !organisation) {
+        toast.error('All fields are required');
+        return;
+      }
+
       console.log(name,email,password,userType,organisation);
       // Simulate API call for signup
 
@@ -108,7 +103,6 @@ export const signup = (name, email, password,userType,organisation) => {
 //   };
 // }
 
-
 export const logout = () => async (dispatch) => {
   try {
     console.log("apple in a day")
@@ -125,15 +119,36 @@ export const logout = () => async (dispatch) => {
 
 export const forgotPassword = (email) => {
   return async (dispatch) => {
-    try {
-      // Simulate API call for forgot password
-      const response = await axios.post(
-        "/api/user/forgotpassword",
-        { email }
-      );
-      dispatch({ type: FORGOT_PASSWORD_SUCCESS, payload: response.data });
-    } catch (error) {
-      dispatch({ type: FORGOT_PASSWORD_FAILURE, payload: error.message });
-    }
+      try {
+          const response = await toast.promise(
+              axios.post("/api/admin/password/forgot", { email }),
+              {
+                  loading: 'Processing...',
+                  success: 'Reset password link has been sent to your registered email.',
+                  error: 'Error resetting password',
+              }
+          );
+
+          dispatch({ type: FORGOT_PASSWORD_SUCCESS, payload: response.data });
+      } catch (error) {
+          dispatch({ type: FORGOT_PASSWORD_FAILURE, payload: error.message });
+      }
   };
 };
+
+export const resetPassword = (password,confirmPassword,token) => {
+  return async (dispatch) =>{
+    try {
+      const response = await axios.put(
+        `http://localhost:4000/api/admin/password/reset/${token}`,
+        {password,confirmPassword}
+      );
+      toast.success("Password Reset Successfully");
+      dispatch({type:RESET_PASSWORD_SUCCESS,payload: response.data});
+    } catch (error) {
+      toast.error(error.message);
+      console.log(error.message);
+      dispatch({type:RESET_PASSWORD_FAILURE,payload: error.message});
+    }
+  }
+}

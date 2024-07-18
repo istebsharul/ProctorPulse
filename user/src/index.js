@@ -14,6 +14,7 @@ import SignupPage from "./Pages/SignupPage";
 import ForgotPasswordPage from "./Pages/ForgotPasswordPage";
 import Profile from "./Pages/Profile";
 import TestPage from "./Pages/TestPage";
+import ResetPasswordPage from './Pages/ResetPasswordPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -28,6 +29,7 @@ root.render(
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
+            <Route path="/password/reset/:token" element={<ResetPasswordPage/>}/>
             <Route element={<ProtectedRoute />}>
               <Route path="/profile" element={<Profile />} />
               <Route path="/test" element={<TestPage />} />
