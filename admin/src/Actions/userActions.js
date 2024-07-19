@@ -106,11 +106,18 @@ export const signup = (name, email, password,userType,organisation) => {
 export const logout = () => async (dispatch) => {
   try {
     console.log("apple in a day")
-    await axios.get(
-      "/api/user/logout"
-    );
-
-    dispatch({ type: LOGOUT_SUCCESS});
+    // await axios.get(
+    //   "/api/admin/logout"
+    // );
+    const response = await toast.promise(
+      axios.get("/api/admin/logout"),
+      {
+          loading: 'Logging out...',
+          success: 'Logout Successful.',
+          error: 'Error Logging out',
+      }
+  );
+    dispatch({ type: LOGOUT_SUCCESS,payload:response.data});
   } catch (error) {
     dispatch({ type: LOGOUT_FAILURE, payload: error.message });
   }

@@ -15,6 +15,17 @@ const crypto = require('crypto');
  * @param {Function} next - The next middleware function in the chain.
  * @returns {Promise<void>} - A Promise that resolves after the user is registered.
  */
+
+/**
+ * Authenticates a user and generates an authentication token.
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @param {Function} next - The next middleware function in the chain.
+ * @returns {Promise<void>} - A Promise that resolves after the user is authenticated.
+ */
+
+
+//Register a User
 exports.registerUser = asyncErrors(async (req, res, next) => {
     const { name, email, password } = req.body;
     logger.info(`Name: ${name}\n Email: ${email}\n Password: ${password}`);
@@ -28,14 +39,7 @@ exports.registerUser = asyncErrors(async (req, res, next) => {
     sendToken(user, 201, res);
 });
 
-/**
- * Authenticates a user and generates an authentication token.
- * @param {Object} req - The HTTP request object.
- * @param {Object} res - The HTTP response object.
- * @param {Function} next - The next middleware function in the chain.
- * @returns {Promise<void>} - A Promise that resolves after the user is authenticated.
- */
-
+//Login User
 exports.loginUser = asyncErrors(async (req, res, next) => {
     const { email, password } = req.body;
 
@@ -67,7 +71,7 @@ exports.loginUser = asyncErrors(async (req, res, next) => {
     sendToken(user, 200, res);
 });
 
-//log out
+//Logout User
 exports.logOutUser = asyncErrors(async (req, res, next) => {
     res.cookie('token', null, {
         expires: new Date(Date.now()),
@@ -196,6 +200,7 @@ exports.updatePassword = asyncErrors(async (req, res, next) => {
     sendToken(user, 200, res); // store cookies
 });
 
+//LoggedInUser
 exports.userProfile = asyncErrors(async (req, res, next) => {
     //let username = req.params.username;
 
@@ -217,6 +222,7 @@ exports.userProfile = asyncErrors(async (req, res, next) => {
     res.status(200).json({ success: true, user });
 });
 
+//Update User Profile
 exports.updateProfile = asyncErrors(async (req, res, next) => {
     const { name, email } = req.body;
 

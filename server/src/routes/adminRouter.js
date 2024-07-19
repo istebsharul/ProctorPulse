@@ -8,6 +8,7 @@ const {
     resetPasswordAdmin,
     updatePasswordAdmin,
     adminProfile,
+    logoutAdmin,
 } = require('../controllers/adminController');
 
 const {
@@ -19,6 +20,7 @@ const router = express.Router();
 
 router.route('/register').post(registerAdmin);
 router.route('/login').post(loginAdmin);
+router.route('/logout').get(logoutAdmin);
 router.route('/profile').get(isAuthenticatedAdmin,adminProfile);
 router.route('/profile/:username').get(profileAdmin);
 router.route('/profile/update').put(isAuthenticatedAdmin, updateProfileAdmin);

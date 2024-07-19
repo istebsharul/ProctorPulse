@@ -66,89 +66,16 @@ exports.loginAdmin = asyncErrors(async (req, res, next) => {
     sendToken(admin, 200, res);
 });
 
-// Get admin profile
-exports.profileAdmin = asyncErrors(async (req, res, next) => {
-    let adminUsername = req.params.username;
-
-    // Find admin by username
-    const admin = await Admin.findOne({ name: adminUsername });
-
-    // If admin not found, return error
-    if (!admin) {
-        logger.error('Admin Not Found');
-        return res.status(404).json({ message: 'Admin Not Found!' });
-    }
-
-    // Log admin profile retrieval
-    logger.info(`Admin profile retrieved for admin: ${admin}`);
-
-    // Return admin profile
-    res.status(200).json({ success: true, admin });
-});
-
-
-exports.adminProfile = asyncErrors(async(req,res,next)=>{
-     // Find the user by username
-     console.log(req.admin._id)
-
-     const admin = await Admin.findById(req.admin._id)
- 
-     // If no user is found, pass an error to the error handling middleware
-     if (!admin) {
-         logger.error('Admin not found');
-         return res.status(404).json({ message: 'Admin not found' });
-     }
- 
-     // If user is found, log an info message
-     logger.info(`Admin profile retrieved for username`);
- 
-     // If user is found, return user profile
-     res.status(200).json({ success: true, admin });
-})
-
-// Update admin profile
-exports.updateProfileAdmin = asyncErrors(async (req, res, next) => {
-    const { name, email } = req.body;
-
-    logger.debug('updating started');
-
-    // Check if name and email are provided
-    if (!name || !email) {
-        return next(
-            new ErrorHandler('Please provide your name and email', 400)
-        );
-    }
-
-    // Check if req.admin exists and has the id property
-    if (!req.admin || !req.admin.id) {
-        logger.error('Admin ID not found in request');
-        return res
-            .status(404)
-            .json({ message: 'Admin ID not found in request' });
-    }
-
-    // Find admin by ID
-    const admin = await Admin.findById(req.admin.id);
-    // console.log('admin: ', admin);
-
-    // If admin not found, return error
-    if (!admin) {
-        logger.error('Admin not Found');
-        return res.status(404).json({ message: 'Admin not found' });
-    }
-
-    // Update admin's name and email
-    admin.name = name;
-    admin.email = email;
-
-    // Save updated profile
-    await admin.save();
-
-    // Log profile update
-    logger.info('Profile updated Successfully');
-
-    // Return success response
-    res.status(200).json({ message: 'Profile Updated Successfully', admin });
+// Logout admin
+exports.logoutAdmin = asyncErrors(async (req, res, next) => {
+    res.cookie('token', null, {
+        expires: new Date(Date.now()),
+        httpOnly: true,
+    });
+    res.status(200).json({
+        success: true,
+        message: 'Admin logout successfully',
+    })
 });
 
 // Controller for handling admin forgot password request
@@ -252,6 +179,91 @@ exports.resetPasswordAdmin = asyncErrors(async (req, res, next) => {
     sendToken(admin, 200, res);
 
     // res.status(200).json({message:"Password Reset Successful!"});
+});
+
+// Get admin public profile
+exports.profileAdmin = asyncErrors(async (req, res, next) => {
+    let adminUsername = req.params.username;
+
+    // Find admin by username
+    const admin = await Admin.findOne({ name: adminUsername });
+
+    // If admin not found, return error
+    if (!admin) {
+        logger.error('Admin Not Found');
+        return res.status(404).json({ message: 'Admin Not Found!' });
+    }
+
+    // Log admin profile retrieval
+    logger.info(`Admin profile retrieved for admin: ${admin}`);
+
+    // Return admin profile
+    res.status(200).json({ success: true, admin });
+});
+
+// LoggedIn Profile
+exports.adminProfile = asyncErrors(async (req, res, next) => {
+    // Find the user by username
+    console.log(req.admin._id)
+
+    const admin = await Admin.findById(req.admin._id)
+
+    // If no user is found, pass an error to the error handling middleware
+    if (!admin) {
+        logger.error('Admin not found');
+        return res.status(404).json({ message: 'Admin not found' });
+    }
+
+    // If user is found, log an info message
+    logger.info(`Admin profile retrieved for username`);
+
+    // If user is found, return user profile
+    res.status(200).json({ success: true, admin });
+})
+
+// Update admin profile
+exports.updateProfileAdmin = asyncErrors(async (req, res, next) => {
+    const { name, email } = req.body;
+
+    logger.debug('updating started');
+
+    // Check if name and email are provided
+    if (!name || !email) {
+        return next(
+            new ErrorHandler('Please provide your name and email', 400)
+        );
+    }
+
+    // Check if req.admin exists and has the id property
+    if (!req.admin || !req.admin.id) {
+        logger.error('Admin ID not found in request');
+        return res
+            .status(404)
+            .json({ message: 'Admin ID not found in request' });
+    }
+
+    // Find admin by ID
+    const admin = await Admin.findById(req.admin.id);
+    // console.log('admin: ', admin);
+
+    // If admin not found, return error
+    if (!admin) {
+        logger.error('Admin not Found');
+        return res.status(404).json({ message: 'Admin not found' });
+    }
+
+    // Update admin's name and email
+    admin.name = name;
+    admin.email = email;
+
+    // Save updated profile
+    await admin.save();
+
+    // Log profile update
+    logger.info('Profile updated Successfully');
+
+    // Return success response
+    res.status(200).json({ message: 'Profile Updated Successfully', admin });
 });
 
 // Controller for handling admin update password request
