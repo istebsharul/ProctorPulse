@@ -1,4 +1,6 @@
 import React from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const TestDetailsPart = ({ data, setData }) => {
   return (
@@ -28,6 +30,14 @@ const TestDetailsPart = ({ data, setData }) => {
           type="number"
           value={data.duration}
           onChange={(e) => setData({ ...data, duration: e.target.value })}
+        />
+      </label>
+      <label className='flex flex-col'>
+        Due Date:
+        <DatePicker
+          selected={data.expiryDate ? new Date(data.expiryDate) : null}
+          onChange={(date) => setData({ ...data, expiryDate: date })}
+          className="w-full border-b-2 border-gray-300 focus:border-purple-600 outline-none"
         />
       </label>
     </div>

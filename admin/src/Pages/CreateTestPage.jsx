@@ -9,6 +9,7 @@ const CreateTestPage = () => {
     testName: '',
     subject: '',
     duration: '',
+    expiryDate:'',
     questions: [
       {
         title: '',

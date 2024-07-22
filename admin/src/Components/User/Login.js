@@ -3,13 +3,15 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../../Actions/userActions";
 import image1 from "../../Assets/image1.png";
-import image2 from "../../Assets/image2.png";
+import {useNavigate} from "react-router-dom";
+
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const error = useSelector((state) => state.error);
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -17,6 +19,7 @@ function Login() {
       .then(() => {
         // Assuming login action sets isLoggedIn in Redux state
         // updateStatus(); // Update parent component state if needed
+        navigate('/');
       })
       .catch((error) => {
         console.error("Login error:", error);

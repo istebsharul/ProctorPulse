@@ -9,6 +9,7 @@ const Profile = () => {
                 <div>
                     <h1>Welcome, {currentUser.name}!</h1>
                     <p>Email: {currentUser.email}</p>
+                    <p>{currentUser._id}</p>
                 </div>
             ) : (
                 <h1 >No user is currently logged in</h1>
