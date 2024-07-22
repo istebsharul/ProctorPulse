@@ -11,6 +11,7 @@ const { createQuestion } = require('./questionController');
 const ErrorHandler = require('../utils/errorHandlers');
 const calculateScore = require('../services/evaluation');
 const UserAttempt = require('../models/userAttemptResponse.model');
+const Admin = require('../models/admin.models');
 
 /**
  * Fetch the test history of the user with given userId.
@@ -79,62 +80,60 @@ exports.getTestHistory = asyncErrors(async (req, res, next) => {
 
 // Get Available Test -> Fetching all the Test assigned to a particular User
 exports.getAvailableTests = asyncErrors(async (req, res, next) => {
-    const userId = req.params.userId;
-    logger.info(`RequestBody: ${userId}`);
+    const adminId = req.params.adminId;
+    logger.info(`RequestBody: ${adminId}`);
 
-    if (!isValidObjectId(userId)) {
-        message = `UserId ${userId} is not valid.`;
+    if (!isValidObjectId(adminId)) {
+        message = `UserId ${adminId} is not valid.`;
         logger.error(message);
         const response = new ApiResponse(400, null, message);
         return res.status(400).json(response);
     }
-    const doesUserExists = await isIdExists(User, userId);
+    const doesUserExists = await isIdExists(Admin, adminId);
 
     logger.info(`doesUser: ${doesUserExists}`);
     if (!doesUserExists) {
-        message = `User with userId ${userId} does not exist.`;
+        message = `Admin with adminId ${adminId} does not exist.`;
         logger.error(message);
         const response = new ApiResponse(400, null, message);
         return res.status(400).json(response);
     }
 
     try {
-        const availableTests = await Test.find({
-            users: { $elemMatch: { $eq: userId } },
-        });
+        const availableTests = await Test.find({ createdBy: adminId });
         logger.info('Available tests fetched successfully.');
         logger.info(availableTests);
 
         const formattedTests = [];
 
-        for (const test of availableTests) {
-            let userTestAttempt;
-            try {
-                userTestAttempt = await UserTestAttempt.findOne({
-                    user_id: userId,
-                    test_id: test._id,
-                });
-            } catch (err) {
-                const message = `Failed to fetch the user test attempted with test_id ${test._id}. Reason: ${err}`;
-                logger.error(message);
-                return next(err);
-            }
+        // for (const test of availableTests) {
+        //     let userTestAttempt;
+        //     try {
+        //         userTestAttempt = await UserTestAttempt.findOne({
+        //             user_id: userId,
+        //             test_id: test._id,
+        //         });
+        //     } catch (err) {
+        //         const message = `Failed to fetch the user test attempted with test_id ${test._id}. Reason: ${err}`;
+        //         logger.error(message);
+        //         return next(err);
+        //     }
 
-            const status = userTestAttempt ? 'Completed' : 'Available';
+        //     const status = userTestAttempt ? 'Completed' : 'Available';
 
-            formattedTests.push({
-                testId: test._id,
-                name: test.name,
-                subject: test.subject,
-                duration: test.duration.toString(), // Convert duration to string if needed
-                status: status,
-            });
-        }
+        //     formattedTests.push({
+        //         testId: test._id,
+        //         name: test.name,
+        //         subject: test.subject,
+        //         duration: test.duration.toString(), // Convert duration to string if needed
+        //         status: status,
+        //     });
+        // }
 
-        const response = new ApiResponse(200, formattedTests);
+        const response = new ApiResponse(200, availableTests);
         return res.status(200).json(response);
     } catch (err) {
-        const message = `Failed to fetch available tests for user with userId ${userId}. Reason: ${err}`;
+        const message = `Failed to fetch available tests for Admin with AdminId ${adminId}. Reason: ${err}`;
         logger.error(message);
         return next(err);
     }

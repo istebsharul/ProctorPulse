@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const calculateExpiryDate = () => {
     const currentDate = new Date();
     const expiryDate = new Date(currentDate);
-    expiryDate.setDate(expiryDate.getDate() + 30); // Adding 30 days
+    expiryDate.setDate(expiryDate.getDate() + 3); // Adding 30 days
     return expiryDate;
 };
 
