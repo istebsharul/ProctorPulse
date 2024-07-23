@@ -15,6 +15,17 @@ const crypto = require('crypto');
  * @param {Function} next - The next middleware function in the chain.
  * @returns {Promise<void>} - A Promise that resolves after the user is registered.
  */
+
+/**
+ * Authenticates a user and generates an authentication token.
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @param {Function} next - The next middleware function in the chain.
+ * @returns {Promise<void>} - A Promise that resolves after the user is authenticated.
+ */
+
+
+//Register a User
 exports.registerUser = asyncErrors(async (req, res, next) => {
     const { name, email, password } = req.body;
     logger.info(`Name: ${name}\n Email: ${email}\n Password: ${password}`);
@@ -28,13 +39,7 @@ exports.registerUser = asyncErrors(async (req, res, next) => {
     sendToken(user, 201, res);
 });
 
-/**
- * Authenticates a user and generates an authentication token.
- * @param {Object} req - The HTTP request object.
- * @param {Object} res - The HTTP response object.
- * @param {Function} next - The next middleware function in the chain.
- * @returns {Promise<void>} - A Promise that resolves after the user is authenticated.
- */
+//Login User
 exports.loginUser = asyncErrors(async (req, res, next) => {
     const { email, password } = req.body;
 
@@ -66,6 +71,18 @@ exports.loginUser = asyncErrors(async (req, res, next) => {
     sendToken(user, 200, res);
 });
 
+//Logout User
+exports.logOutUser = asyncErrors(async (req, res, next) => {
+    res.cookie('token', null, {
+        expires: new Date(Date.now()),
+        httpOnly: true,
+    });
+    res.status(200).json({
+        success: true,
+        message: 'logged out successfully',
+    });
+});
+
 //forgot password
 exports.forgotPassword = asyncErrors(async (req, res, next) => {
     const user = await User.findOne({ email: req.body.email });
@@ -79,9 +96,10 @@ exports.forgotPassword = asyncErrors(async (req, res, next) => {
 
     await user.save({ validateBeforeSave: false }); //in getResetPasswordtoken() we are changing some variables of user, those are needed to be updated in the database
 
-    const resetPasswordUrl = `${req.protocol}://${req.get(
-        'host'
-    )}/password/reset/${resetToken}`;
+    const host = req.get('host').split('/')[0]; // Extract only the host part, removing any additional path segments
+    const resetPasswordUrl = `${req.protocol}://localhost:3000/password/reset/${resetToken}`;
+
+    console.log(`${host}`);
 
     const message = `Follow the url to reset your password : \n\n ${resetPasswordUrl} \n\n If u haven't requested it , ignore it `;
 
@@ -92,7 +110,7 @@ exports.forgotPassword = asyncErrors(async (req, res, next) => {
             subject: `Password Recovery`,
             message,
         });
-        logger.info(`Email sent successfully to: ${user.email}`);
+        logger.info(`User Email sent successfully to: ${user.email}`);
         res.status(201).json({
             success: true,
             message: `mail sent to ${user.email} successfully`,
@@ -115,7 +133,7 @@ exports.resetPassword = asyncErrors(async (req, res, next) => {
     logger.info(`Reset password token received: ${req.params.token}`);
 
     // Hash the reset password token
-    resetPasswordToken = crypto
+    const resetPasswordToken = crypto
         .createHash('sha256')
         .update(req.params.token)
         .digest('hex');
@@ -182,13 +200,14 @@ exports.updatePassword = asyncErrors(async (req, res, next) => {
     sendToken(user, 200, res); // store cookies
 });
 
+//LoggedInUser
 exports.userProfile = asyncErrors(async (req, res, next) => {
     //let username = req.params.username;
 
     // Find the user by username
-    console.log(req.user._id)
+    console.log(req.user._id);
 
-    const user = await User.findById(req.user._id)
+    const user = await User.findById(req.user._id);
 
     // If no user is found, pass an error to the error handling middleware
     if (!user) {
@@ -203,6 +222,7 @@ exports.userProfile = asyncErrors(async (req, res, next) => {
     res.status(200).json({ success: true, user });
 });
 
+//Update User Profile
 exports.updateProfile = asyncErrors(async (req, res, next) => {
     const { name, email } = req.body;
 

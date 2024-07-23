@@ -42,7 +42,7 @@ exports.loginAdmin = asyncErrors(async (req, res, next) => {
     // If admin not found, return error
     if (!admin) {
         logger.error('Admin not found');
-        return next(new ApiResponse(401, null, 'Invalid email and password'));
+        return next(new ApiResponse(401, null, 'Admin not found!'));
     }
     // console.log(admin);
 
@@ -66,7 +66,122 @@ exports.loginAdmin = asyncErrors(async (req, res, next) => {
     sendToken(admin, 200, res);
 });
 
-// Get admin profile
+// Logout admin
+exports.logoutAdmin = asyncErrors(async (req, res, next) => {
+    res.cookie('token', null, {
+        expires: new Date(Date.now()),
+        httpOnly: true,
+    });
+    res.status(200).json({
+        success: true,
+        message: 'Admin logout successfully',
+    })
+});
+
+// Controller for handling admin forgot password request
+exports.forgotPasswordAdmin = asyncErrors(async (req, res, next) => {
+    // Find admin by email
+    const admin = await Admin.findOne({ email: req.body.email });
+
+    // If admin not found, return error
+    if (!admin) {
+        logger.error('Admin Not Found');
+        return next(new ErrorHandler('Admin not found', 404));
+    }
+
+    // Generate reset password token
+    const resetToken = admin.getResetPasswordToken();
+
+    // Save admin with token (validateBeforeSave is set to false to bypass schema validation)
+    await admin.save({ validateBeforeSave: false });
+
+    // Construct reset password URL
+    const resetPasswordUrl = `${req.protocol}://localhost:3000/password/reset/${resetToken}`;
+
+    // Compose email message
+    const message = `Follow the url to reset your password : \n\n ${resetPasswordUrl} \n\n If u haven't requested it , ignore it `;
+
+    try {
+        // Send password reset email
+        await sendMail({
+            email: admin.email,
+            subject: 'Password Recovery',
+            message,
+        });
+
+        // Log successful email sending
+        logger.info(`Admin Email sent Successfully to: ${admin.email}`);
+
+        // Respond with success message
+        res.status(201).json({
+            success: true,
+            message: `Mail sent to ${admin.email} successfully`,
+        });
+    } catch (error) {
+        // Log error sending email
+        logger.error(`Error sending email: ${error.message}`);
+
+        // Clear reset token and expiration
+        admin.resetPasswordToken = undefined;
+        admin.resetPasswordToken = undefined;
+
+        // Save admin changes
+        await admin.save({ validateBeforeSave: false });
+
+        // Pass error to error handling middleware
+        return next(new ErrorHandler(error.message, 500));
+    }
+});
+
+// Controller for handling admin reset password request
+exports.resetPasswordAdmin = asyncErrors(async (req, res, next) => {
+    // Log reset password token received
+    logger.info(`Reset password token received for Admin: ${req.params.token}`);
+
+    // Hash reset token
+    const resetPasswordToken = crypto
+        .createHash('sha256')
+        .update(req.params.token)
+        .digest('hex');
+
+    // Find admin by reset token and check expiration
+    const admin = await Admin.findOne({
+        resetPasswordToken,
+        resetPasswordExpire: { $gt: Date.now() },
+    });
+
+    // If admin not found or token expired, return error
+    if (!admin) {
+        logger.error('Admin Reset password token is invalid or has expired logger');
+        return next(
+            new ErrorHandler('Admin Reset password is invalid or has expired neh', 404)
+        );
+    }
+
+    // Check if passwords match
+    if (req.body.password != req.body.confirmPassword) {
+        logger.error("Password Doesn't match");
+        return next(new ErrorHandler("Password doesn't match", 400));
+    }
+
+    // Update admin password and clear reset token fields
+    admin.password = req.body.password;
+    admin.resetPasswordToken = undefined;
+    admin.resetPasswordExpire = undefined;
+
+    // Save admin changes
+    await admin.save();
+
+    // Log password reset success
+    logger.info('Password reset successfully');
+
+    // Send token and respond with success
+    sendToken(admin, 200, res);
+
+    // res.status(200).json({message:"Password Reset Successful!"});
+});
+
+// Get admin public profile
 exports.profileAdmin = asyncErrors(async (req, res, next) => {
     let adminUsername = req.params.username;
 
@@ -85,6 +200,26 @@ exports.profileAdmin = asyncErrors(async (req, res, next) => {
     // Return admin profile
     res.status(200).json({ success: true, admin });
 });
+
+// LoggedIn Profile
+exports.adminProfile = asyncErrors(async (req, res, next) => {
+    // Find the user by username
+    console.log(req.admin._id)
+
+    const admin = await Admin.findById(req.admin._id)
+
+    // If no user is found, pass an error to the error handling middleware
+    if (!admin) {
+        logger.error('Admin not found');
+        return res.status(404).json({ message: 'Admin not found' });
+    }
+
+    // If user is found, log an info message
+    logger.info(`Admin profile retrieved for username`);
+
+    // If user is found, return user profile
+    res.status(200).json({ success: true, admin });
+})
 
 // Update admin profile
 exports.updateProfileAdmin = asyncErrors(async (req, res, next) => {
@@ -129,109 +264,6 @@ exports.updateProfileAdmin = asyncErrors(async (req, res, next) => {
 
     // Return success response
     res.status(200).json({ message: 'Profile Updated Successfully', admin });
-});
-
-// Controller for handling admin forgot password request
-exports.forgotPasswordAdmin = asyncErrors(async (req, res, next) => {
-    // Find admin by email
-    const admin = await Admin.findOne({ email: req.body.email });
-
-    // If admin not found, return error
-    if (!admin) {
-        logger.error('Admin Not Found');
-        return next(new ErrorHandler('Admin not found', 404));
-    }
-
-    // Generate reset password token
-    const resetToken = admin.getResetPasswordToken();
-
-    // Save admin with token (validateBeforeSave is set to false to bypass schema validation)
-    await admin.save({ validateBeforeSave: false });
-
-    // Construct reset password URL
-    const resetPasswordUrl = `${req.protocol}://${req.get(
-        'host'
-    )}/password/reset/${resetToken}`;
-
-    // Compose email message
-    const message = `Follow the url to reset your password : \n\n ${resetPasswordUrl} \n\n If u haven't requested it , ignore it `;
-
-    try {
-        // Send password reset email
-        await sendMail({
-            email: admin.email,
-            subject: 'Password Recovery',
-            message,
-        });
-
-        // Log successful email sending
-        logger.info(`Email sent Successfully to: ${admin.email}`);
-
-        // Respond with success message
-        res.status(201).json({
-            success: true,
-            message: `Mail sent to ${admin.email} successfully`,
-        });
-    } catch (error) {
-        // Log error sending email
-        logger.error(`Error sending email: ${error.message}`);
-
-        // Clear reset token and expiration
-        admin.resetPasswordToken = undefined;
-        admin.resetPasswordToken = undefined;
-
-        // Save admin changes
-        await admin.save({ validateBeforeSave: false });
-
-        // Pass error to error handling middleware
-        return next(new ErrorHandler(error.message, 500));
-    }
-});
-
-// Controller for handling admin reset password request
-exports.resetPasswordAdmin = asyncErrors(async (req, res, next) => {
-    // Log reset password token received
-    logger.info(`Reset password token received: ${req.params.token}`);
-
-    // Hash reset token
-    const resetPasswordToken = crypto
-        .createHash('sha256')
-        .update(req.params.token)
-        .digest('hex');
-
-    // Find admin by reset token and check expiration
-    const admin = await Admin.findOne({
-        resetPasswordToken,
-        resetPasswordExpire: { $gt: Date.now() },
-    });
-
-    // If admin not found or token expired, return error
-    if (!admin) {
-        logger.error('Reset password token is invalid or has expired');
-        return next(
-            new ErrorHandler('Reset password is invalid or has expired', 404)
-        );
-    }
-
-    // Check if passwords match
-    if (req.body.password != req.body.confirmPassword) {
-        logger.error("Password Doesn't match");
-        return next(new ErrorHandler("Password doesn't match", 400));
-    }
-
-    // Update admin password and clear reset token fields
-    admin.password = req.body.password;
-    admin.resetPasswordToken = undefined;
-    admin.resetPasswordExpire = undefined;
-
-    // Save admin changes
-    await admin.save();
-
-    // Log password reset success
-    logger.info('Password reset successfully');
-
-    // Send token and respond with success
-    sendToken(admin, 200, res);
 });
 
 // Controller for handling admin update password request
