@@ -8,12 +8,12 @@ import {
 } from 'react-router-dom';
 import { Provider, useSelector } from 'react-redux';
 import store from './Store/store';
-import LoginPage from './Components/Pages/LoginPage';
-import SignupPage from './Components/Pages/SignupPage';
-import ForgotpasswordPage from './Components/Pages/ForgotpasswordPage';
-import HomePage from './Components/Pages/HomePage';
+import LoginPage from './Pages/LoginPage';
+import SignupPage from './Pages/SignupPage';
+import ForgotpasswordPage from './Pages/ForgotpasswordPage';
+import HomePage from './Pages/HomePage';
 import ProtectedRoute from './Utils/ProtectedRoute';
-import CreatePage from './Components/Pages/CreatePage';
+import CreatePage from './Pages/CreatePage';
 import { load } from './Actions/userActions';
 
 function App() {
