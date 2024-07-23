@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import TestDetailsPart from '../Components/Tests/TestDetailsPart';
 import QuestionsPart from '../Components/Tests/QuestionsPart';
+import { useNavigate } from 'react-router-dom';
+import Modal from '../Components/Modal';
 
 const CreateTestPage = () => {
   const [page, setPage] = useState(0);
-  const [data, setData] = useState({
+  const navigate = useNavigate();
+
+  const initialState = {
     testName: '',
     subject: '',
     duration: '',
-    expiryDate:'',
+    expiryDate: '',
     questions: [
       {
         title: '',
@@ -17,13 +21,44 @@ const CreateTestPage = () => {
         correct_answer: ''
       }
     ],
+  }
+
+  const [data, setData] = useState(() => {
+    const savedData = localStorage.getItem('testData');
+    return savedData ? JSON.parse(savedData) : initialState
   });
+
+  const [showModal, setShowModal] = useState(false);
+
+  const handleDismiss = () => {
+    setData(initialState);
+    localStorage.removeItem('testData');
+    navigate('/');
+  };
+
+  const handlePrev = () => {
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
+  const handleConfirmModal = () => {
+    setShowModal(false);
+    handleDismiss();
+  };
+
+
+  useEffect(() => {
+    localStorage.setItem('testData', JSON.stringify(data));
+  }, [data]);
 
   const createTest = async (e) => {
     console.log('Create Test Pressed');
     // e.preventDefault();
     try {
-      console.log(data.testName,data.subject,data.duration,data.questions);
+      console.log(data.testName, data.subject, data.duration, data.questions);
       console.log(data);
       await axios.post('api/admin/tests/create', data);
       alert("Test created successfully");
@@ -57,6 +92,41 @@ const CreateTestPage = () => {
     }
   };
 
+  // const handlePrev = () => {
+  //   console.log("Hello");
+  //   setData(initialState);
+  //   localStorage.removeItem('testData');
+  //   navigate('/');
+  // }
+
+  // const handleDismiss = () => {
+  //   setData(initialState);
+  //   localStorage.removeItem('testData');
+  //   navigate('/');
+  // };
+
+  // const handlePrev = () => {
+  //   toast((t) => (
+  //     <span>
+  //       Are you sure you want to exit?
+  //       <button 
+  //         onClick={() => {
+  //           toast.dismiss(t.id);
+  //           handleDismiss();
+  //         }} 
+  //         style={{ marginLeft: '10px' }}>
+  //         Yes
+  //       </button>
+  //       <button 
+  //         onClick={() => toast.dismiss(t.id)} 
+  //         style={{ marginLeft: '10px' }}>
+  //         No
+  //       </button>
+  //     </span>
+  //   ));
+  // };
+
+
   return (
     <div className='bg-gradient-to-r from-slate-100 to-purple-600 w-full min-h-full flex flex-col justify-center py-36 sm:px-6 lg:px-8 z-100 mf:h-screen'>
       <div className='sm:mx-auto sm:w-full sm:max-w-md'>
@@ -71,12 +141,12 @@ const CreateTestPage = () => {
             <div className='flex flex-row gap-3 pt-8'>
               <button
                 type="button"
-                disabled={page === 0}
-                onClick={() => setPage((currPage) => currPage - 1)}
+                onClick={page === 0 ? handlePrev : () => setPage((currPage) => currPage - 1)}
                 className='flex cursor-pointer w-full justify-center rounded-md border border-transparent bg-purple-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
               >
-                Prev
+                {page === 0 ? "Delete Test" : "Prev"}
               </button>
+              <Modal show={showModal} onClose={handleCloseModal} onConfirm={handleConfirmModal} />
               <button
                 type="button"
                 onClick={handleNext}

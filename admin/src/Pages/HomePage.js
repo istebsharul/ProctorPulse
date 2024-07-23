@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import CreateTestButton from "../Components/User/CreateTestButton";
 import AvailableTest from "../Components/User/AvailableTest";
 import useAvailableTests from "../Hooks/useAvailableTests";
@@ -6,10 +6,6 @@ import PreviousTest from "../Components/User/PreviousTest";
 
 function HomePage() {
   const { availableTests, loading, error } = useAvailableTests();
-
-  useEffect(()=>{
-    console.log(availableTests);
-  })
 
   if (loading) {
     return <p className="flex justify-center items-center">Loading...</p>;
