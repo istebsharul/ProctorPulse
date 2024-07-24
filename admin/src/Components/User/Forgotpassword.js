@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { forgotPassword } from "../../Actions/userActions";
 import image1 from "../../Assets/image1.png";
-import image2 from "../../Assets/image2.png";
 
 function Forgotpassword() {
   const [email, setEmail] = useState("");
