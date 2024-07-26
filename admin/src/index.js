@@ -11,10 +11,11 @@ import LoginPage from "./Pages/LoginPage";
 import SignupPage from "./Pages/SignupPage";
 import CreateTestPage from "./Pages/CreateTestPage";
 import ForgotpasswordPage from "./Pages/ForgotpasswordPage";
-import Profile from "./Pages/Profile";
 import ProtectedRoute from "./Utils/ProtectedRoute";
 import PasswordResetPage from "./Pages/PasswordResetPage";
 import { PersistGate } from "redux-persist/integration/react";
+import ProfilePage from "./Pages/ProfilePage";
+import EditProfilePage from "./Pages/EditProfilePage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -33,8 +34,9 @@ root.render(
               <Route exact path="/forgotpassword" element={<ForgotpasswordPage />} />
               <Route exact path="/password/reset/:token" element={<PasswordResetPage />} />
               <Route exact element={<ProtectedRoute />}>
-                <Route exact path="/profile" element={<Profile />} />
-                <Route exact path="/create" element={<CreateTestPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/profile/edit" element={<EditProfilePage/>}/>
+                <Route path="/create" element={<CreateTestPage />} />
               </Route>
             </Routes>
           </div>

@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { FaBars, FaTimes, FaUser } from "react-icons/fa"; // Importing FontAwesome icons
+import { FaBars, FaTimes } from "react-icons/fa"; // Importing FontAwesome icons
 import logo from "../../Assets/logo.png";
 import { useSelector } from "react-redux";
 import { logout } from "../../Actions/userActions";
 import { useDispatch } from 'react-redux';
 import { useNavigate } from "react-router-dom";
+import profilePicture from "../../Assets/profile.png";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -108,7 +109,7 @@ const Navbar = () => {
 
           <li className="md:px-8 md:py-0 py-3 relative" ref={dropdownRef}>
             <div onClick={toggleUserDropdown} className="cursor-pointer">
-              <FaUser />
+            <img className="w-8 h-8 object-cover rounded-full" src={currentUser?.imageUrl || profilePicture} alt="Profile" />
             </div>
             {userDropdown && (
               <div className="absolute right-0 mt-2 w-48 bg-white shadow-md rounded-lg">

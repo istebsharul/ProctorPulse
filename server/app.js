@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const cookie = require('cookie-parser');
@@ -6,6 +7,8 @@ const fileUpload = require('express-fileupload');
 const ErrorMiddleWare = require('./src/middleware/error');
 const DATA_LIMIT = require('./src/utils/constants');
 const cors = require('cors');
+const cloudinary = require('./src/config/cloudinary');
+const upload = require('./src/middleware/multer');
 
 /**
  * Initializes the Express application with necessary middleware and routes.
@@ -27,6 +30,22 @@ app.use(
     })
 );
 
+app.get('/test-cloudinary', async (req, res) => {
+    try {
+        const result = await cloudinary.uploader.upload('https://example.com/test-image.jpg', {
+            upload_preset: 'ml_default', // Adjust according to your setup
+        });
+        res.status(200).json({
+            message: 'Cloudinary is configured correctly!',
+            result,
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: 'Failed to upload image to Cloudinary',
+            error: error.message,
+        });
+    }
+});
 // Parse cookies in the request headers
 app.use(cookie());
 
