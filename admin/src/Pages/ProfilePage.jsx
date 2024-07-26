@@ -35,7 +35,7 @@ const ProfilePage = () => {
     return (
         <div className='w-full flex flex-col justify-start items-center'>
             <div className='w-full h-[11rem] bg-purple-900 shadow-inner-md relative'>
-                <div className='absolute top-[7rem] left-1/2 transform -translate-x-1/2 md:top-20 md:left-1/4 border-2 border-white rounded-full p-1'>
+                <div className='absolute top-[7rem] left-1/2 transform -translate-x-1/2 md:top-20 md:left-1/4 border-2 border-purple-100 rounded-full p-1'>
                     <img className='w-40 h-40 object-cover rounded-full' src={currentUser.imageUrl} alt=""></img>
                 </div>
             </div>
