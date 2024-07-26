@@ -1,4 +1,3 @@
-require('dotenv').config();
 const app = require('./app');
 const dotenv = require('dotenv');
 const connectDatabase = require('./src/config/database');
@@ -16,6 +15,7 @@ process.on('uncaughtException', (err) => {
     logger.error(message);
     process.exit(1);
 });
+
 
 /**
  * Connects to the database, starts the server, and handles graceful server shutdown.
