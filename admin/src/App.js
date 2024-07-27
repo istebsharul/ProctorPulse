@@ -17,7 +17,7 @@ function App() {
     return (
         <>
             <Toaster position="top-center" reverseOrder={false} />
-            <div className="App">
+            <div className="App pt-[3rem]">
             </div>
         </>
     );

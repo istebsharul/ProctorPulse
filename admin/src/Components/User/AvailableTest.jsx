@@ -1,21 +1,18 @@
-import React, { useEffect } from 'react';
+import React, { useEffect,useMemo } from 'react';
 import Test from './Test'; // Adjust the import path as needed
 
 function AvailableTest({ tests = [] }) { // Ensure tests defaults to an empty array
-  useEffect(() => {
-    console.log("Tests", tests);
-    // Ensure tests is an array and check its properties
-    if (Array.isArray(tests) && tests.length > 0) {
-      console.log("Example expiryDate", tests[0].expiryDate);
-    }
+  const activeTests = useMemo(() => {
+    return Array.isArray(tests)
+      ? tests.filter(test => {
+          const expiryDate = new Date(test.expiryDate);
+          console.log(test.name);
+          console.log("Expiry Date",expiryDate);
+          console.log("New Date",new Date());
+          return expiryDate > new Date();
+        })
+      : [];
   }, [tests]);
-
-  const activeTests = Array.isArray(tests)
-  ? tests.filter(test => {
-      const expiryDate = new Date(test.expiryDate);
-      return expiryDate > new Date();
-    })
-  : [];
 
 
   return (

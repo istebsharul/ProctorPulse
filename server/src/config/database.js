@@ -4,7 +4,7 @@ const logger = require('../utils/logger');
 
 /**
  * Connects to the MongoDB database using Mongoose.
- * @returns {Promise<void>} - A Promise that resolves if the connection is successful.
+ * @returns {Promise<void>} - A Promise that resolves if the connection is successful.z
  */
 const connectDatabase = async () => {
     try {
