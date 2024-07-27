@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Questions from '../Components/Tests/Questions'; // Adjust path as per your project structure
+import Questions from '../Components/Questions'; // Adjust path as per your project structure
 import { get_test_details } from '../Actions/testAction'; // Adjust path as per your project structure
 
 const QuizPage = () => {

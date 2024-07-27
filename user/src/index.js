@@ -11,6 +11,7 @@ import ProtectedRoute from "./Utils/ProtectedRoute";
 import HomePage from "./Pages/HomePage";
 import LoginPage from "./Pages/LoginPage";
 import SignupPage from "./Pages/SignupPage";
+import QuizPage from './Pages/QuizPage';
 import ForgotPasswordPage from "./Pages/ForgotPasswordPage";
 import Profile from "./Pages/Profile";
 import TestPage from "./Pages/TestPage";
@@ -30,6 +31,7 @@ root.render(
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
             <Route path="/password/reset/:token" element={<ResetPasswordPage/>}/>
+            <Route path="/quiz" element={<QuizPage />} />
             <Route element={<ProtectedRoute />}>
               <Route path="/profile" element={<Profile />} />
               <Route path="/test" element={<TestPage />} />
