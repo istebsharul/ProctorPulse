@@ -2,11 +2,13 @@ const logger = require('../logger');
 const mongoose = require('mongoose');
 
 exports.isValidObjectId = (id) => {
+    
     return mongoose.Types.ObjectId.isValid(id);
 };
 
 exports.isIdExists = async (model, id) => {
     try {
+        logger.info(`model type: ${model}`);
         const exists = await model.exists({ _id: id });
         logger.info(`Object Fetched: ${exists}`);
         return exists;
