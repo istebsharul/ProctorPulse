@@ -154,7 +154,7 @@ exports.getTestDetails = asyncErrors(async (req, res, next) => {
     }
     const doesUserExists = await isIdExists(User, userId);
 
-    logger.info(`doesUser: ${doesUserExists}`);
+    logger.info(`doesUser: ${JSON.stringify(doesUserExists)}`);
     if (!doesUserExists) {
         message = `User with userId ${userId} does not exist.`;
         logger.error(message);
@@ -188,7 +188,7 @@ exports.getTestDetails = asyncErrors(async (req, res, next) => {
         response = new ApiResponse(200, data);
         return res.status(200).json(response);
     } catch (err) {
-        message = `Failed to get the details of the test ${testId} of the user ${userId}`;
+        message = `Failed to get the details of the test ${testId} of the user ${userId}. Reason: ${err}`;
         logger.error(message);
         return next(err);
     }

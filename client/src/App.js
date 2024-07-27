@@ -14,6 +14,7 @@ import ForgotpasswordPage from './Pages/ForgotpasswordPage';
 import HomePage from './Pages/HomePage';
 import ProtectedRoute from './Utils/ProtectedRoute';
 import CreatePage from './Pages/CreatePage';
+import QuizPage from './Pages/QuizPage';
 import { load } from './Actions/userActions';
 
 function App() {
@@ -51,6 +52,7 @@ function App() {
                         >
                             <Route path="/home" element={<HomePage />} />
                             <Route path="/create" element={<CreatePage />} />
+                            <Route path="/quiz" element={<QuizPage />} />
                         </Route>
                         <Route path="*" element={<Navigate to="/" />} />
                     </Routes>
