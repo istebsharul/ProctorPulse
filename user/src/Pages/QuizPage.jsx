@@ -7,28 +7,19 @@ const QuizPage = () => {
     const dispatch = useDispatch();
     const auth = useSelector(state => state.auth);
     const userId = auth.user ? auth.user._id : null;
-    // const testId = useSelector(state => state.test.id);
-    const testId = "6693e147ef5b4e110e774af8"
-    const questions = useSelector(state => state.test.questions); // Assuming 'test' is the slice of state containing questions
+    const testId = "6693e147ef5b4e110e774af8";
+    const testData = useSelector(state => state.test); // Access the state correctly
+    const questions = testData ? testData.test : []; // Extract questions from testData
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [loading, setLoading] = useState(true);
 
-    
-    console.log('userId from state:', userId);
-    console.log('testId from state:', testId); 
-    console.log(`Questions: ${questions}`)
-
     useEffect(() => {
-        console.log('User ID:', userId);
-        console.log('Test ID:', testId);
         setLoading(true);
         
-        // Simulate userId for testing purposes
-
         dispatch(get_test_details(userId, testId))
             .then(() => setLoading(false))
             .catch(error => {
-                console.info(`userId: ${userId} and testId: ${testId}`)
+                console.info(`userId: ${userId} and testId: ${testId}`);
                 console.error('Error fetching questions:', error);
                 setLoading(false);
             });
@@ -54,7 +45,7 @@ const QuizPage = () => {
         <div className="min-h-screen bg-purple-100 flex flex-col items-center">
             <header className="w-full bg-purple-500 p-4 text-white flex items-center justify-between">
                 <div className="flex space-x-2">
-                    {questions.map((_, index) => (
+                    {Array.isArray(questions) && questions.map((_, index) => (
                         <button
                             key={index}
                             className={`w-8 h-8 rounded-full ${

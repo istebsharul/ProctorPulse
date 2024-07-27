@@ -1,3 +1,4 @@
+// import { act } from "react";
 import {
     FETCH_TEST_DETAILS_SUCCESS,
     FETCH_TEST_DETAILS_FAILURE,
@@ -10,7 +11,6 @@ import {
   };
   
   const testReducer = (state = initialState, action) => {
-    console.log(`test: ${JSON.stringify(action.payload)}`)
     switch (action.type) {
       case FETCH_TEST_DETAILS_SUCCESS:
         return {
