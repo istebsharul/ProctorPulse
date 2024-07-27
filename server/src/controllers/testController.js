@@ -101,8 +101,8 @@ exports.getAvailableTests = asyncErrors(async (req, res, next) => {
 
     try {
         const availableTests = await Test.find({ createdBy: adminId });
-        logger.info('Available tests fetched successfully.');
-        logger.info(availableTests);
+        // logger.info('Available tests fetched successfully.');
+        // logger.info(availableTests);
 
         const formattedTests = [];
 

@@ -13,17 +13,20 @@ function Login() {
   const error = useSelector((state) => state.error);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(login(email, password))
-      .then(() => {
-        // Assuming login action sets isLoggedIn in Redux state
-        // updateStatus(); // Update parent component state if needed
+    try {
+      const result = dispatch(login(email, password));
+      if (result && result.payload && result.payload.success) {
+        console.log("after navigate");
         navigate('/');
-      })
-      .catch((error) => {
-        console.error("Login error:", error);
-      });
+        console.log("after navigate");
+      } else {
+        console.error("Login failed:", result.payload.message);
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+    }
     setEmail("");
     setPassword("");
   };

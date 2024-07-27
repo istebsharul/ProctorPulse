@@ -16,6 +16,7 @@ process.on('uncaughtException', (err) => {
     process.exit(1);
 });
 
+
 /**
  * Connects to the database, starts the server, and handles graceful server shutdown.
  */

@@ -8,7 +8,7 @@ exports.isValidObjectId = (id) => {
 
 exports.isIdExists = async (model, id) => {
     try {
-        logger.info(`model type: ${model}`);
+        // logger.info(`model type: ${model}`);
         const exists = await model.exists({ _id: id });
         logger.info(`Object Fetched: ${exists}`);
         return exists;

@@ -6,6 +6,7 @@ const ErrorHandler = require('../utils/errorHandlers');
 const logger = require('../utils/logger');
 const sendMail = require('../utils/sendEmail');
 const crypto = require('crypto');
+const cloudinary = require('../config/cloudinary.js')
 
 // Register a new admin
 exports.registerAdmin = asyncErrors(async (req, res, next) => {
@@ -215,7 +216,7 @@ exports.adminProfile = asyncErrors(async (req, res, next) => {
     }
 
     // If user is found, log an info message
-    logger.info(`Admin profile retrieved for username`);
+    logger.info(`Admin profile retrieved for username ${admin.imageUrl}`);
 
     // If user is found, return user profile
     res.status(200).json({ success: true, admin });
@@ -223,47 +224,41 @@ exports.adminProfile = asyncErrors(async (req, res, next) => {
 
 // Update admin profile
 exports.updateProfileAdmin = asyncErrors(async (req, res, next) => {
-    const { name, email } = req.body;
 
-    logger.debug('updating started');
-
-    // Check if name and email are provided
-    if (!name || !email) {
-        return next(
-            new ErrorHandler('Please provide your name and email', 400)
-        );
-    }
-
-    // Check if req.admin exists and has the id property
-    if (!req.admin || !req.admin.id) {
-        logger.error('Admin ID not found in request');
-        return res
-            .status(404)
-            .json({ message: 'Admin ID not found in request' });
-    }
-
-    // Find admin by ID
     const admin = await Admin.findById(req.admin.id);
-    // console.log('admin: ', admin);
+    logger.info(admin);
 
-    // If admin not found, return error
-    if (!admin) {
-        logger.error('Admin not Found');
-        return res.status(404).json({ message: 'Admin not found' });
+    if (admin) {
+        admin.name = req.body.name || admin.name;
+        admin.email = req.body.email || admin.email;
+        admin.organisation = req.body.organisation || admin.organisation;
+
+        if (req.body.imageUrl) {
+            const uploadedResponse = await cloudinary.uploader.upload(req.body.imageUrl, {
+                upload_preset: 'ml_default',
+            });
+
+            admin.imageUrl = uploadedResponse.secure_url;
+        }
+
+        if (req.body.password) {
+            admin.password = req.body.password;
+        }
+
+        const updatedAdmin = await admin.save();
+
+        res.status(200).json({
+            id: updatedAdmin._id,
+            name: updatedAdmin.name,
+            email: updatedAdmin.email,
+            organisation: updatedAdmin.organisation,
+            imageUrl: updatedAdmin.imageUrl,
+            token: updatedAdmin.getJWTToken(),
+        });
+    } else {
+        res.status(404);
+        throw new Error('Admin not found');
     }
-
-    // Update admin's name and email
-    admin.name = name;
-    admin.email = email;
-
-    // Save updated profile
-    await admin.save();
-
-    // Log profile update
-    logger.info('Profile updated Successfully');
-
-    // Return success response
-    res.status(200).json({ message: 'Profile Updated Successfully', admin });
 });
 
 // Controller for handling admin update password request

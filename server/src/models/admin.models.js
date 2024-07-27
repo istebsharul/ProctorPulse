@@ -29,6 +29,10 @@ const adminSchema = new mongoose.Schema(
             required: [true, 'Please enter your organization name'],
             maxLength: [50, 'Organization name must be within 50 characters'],
         },
+        imageUrl:{
+            type:String,
+            required:false
+        },
         resetPasswordToken: String,
         resetPasswordExpire: Date,
     },
