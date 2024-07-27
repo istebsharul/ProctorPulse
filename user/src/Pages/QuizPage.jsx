@@ -1,21 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Questions from '../Components/Questions'; // Adjust path as per your project structure
-import { get_test_details } from '../Actions/testAction'; // Adjust path as per your project structure
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Questions from '../Components/Questions';
+import { get_test_details } from '../Actions/testAction';
 
 const QuizPage = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const auth = useSelector(state => state.auth);
     const userId = auth.user ? auth.user._id : null;
     const testId = "6693e147ef5b4e110e774af8";
-    const testData = useSelector(state => state.test); // Access the state correctly
-    const questions = testData ? testData.test : []; // Extract questions from testData
+    const testData = useSelector(state => state.test || {});
+    const questions = useMemo(() => testData.test || [], [testData]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [selectedOptions, setSelectedOptions] = useState([]);
 
     useEffect(() => {
         setLoading(true);
-        
         dispatch(get_test_details(userId, testId))
             .then(() => setLoading(false))
             .catch(error => {
@@ -25,17 +28,43 @@ const QuizPage = () => {
             });
     }, [dispatch, userId, testId]);
 
-    const handlePrev = () => {
-        if (currentQuestionIndex > 0) {
-            setCurrentQuestionIndex(currentQuestionIndex - 1);
+    useEffect(() => {
+        if (questions.length > 0) {
+            const initialOptions = questions.map(question => ({
+                questionId: question._id,
+                answer: -1
+            }));
+            setSelectedOptions(initialOptions);
         }
+    }, [questions]);
+
+    const handlePrev = () => {
+        if (currentQuestionIndex > 0) setCurrentQuestionIndex(currentQuestionIndex - 1);
     };
 
     const handleNext = () => {
-        if (currentQuestionIndex < questions.length - 1) {
-            setCurrentQuestionIndex(currentQuestionIndex + 1);
+        if (currentQuestionIndex < questions.length - 1) setCurrentQuestionIndex(currentQuestionIndex + 1);
+    };
+
+    const handleTestEnd = async () => {
+        alert('The test has ended!');
+        try {
+            const response = await axios.post(`/api/user/${userId}/test/${testId}/submit`, { answers: selectedOptions });
+            console.log(`selected options: ${JSON.stringify(selectedOptions)}`)
+            console.log('Test submitted successfully:', response.data);
+            navigate('/'); 
+        } catch (error) {
+            console.error('Error submitting test:', error);
         }
     };
+
+    const updateSelectedOptions = useCallback((questionIndex, optionIndex) => {
+        setSelectedOptions(prevOptions => 
+            prevOptions.map((option, index) =>
+                index === questionIndex ? { ...option, answer: optionIndex } : option
+            )
+        );
+    }, []);
 
     if (loading) {
         return <div>Loading...</div>;
@@ -45,13 +74,11 @@ const QuizPage = () => {
         <div className="min-h-screen bg-purple-100 flex flex-col items-center">
             <header className="w-full bg-purple-500 p-4 text-white flex items-center justify-between">
                 <div className="flex space-x-2">
-                    {Array.isArray(questions) && questions.map((_, index) => (
+                    {questions.map((_, index) => (
                         <button
                             key={index}
                             className={`w-8 h-8 rounded-full ${
-                                currentQuestionIndex === index
-                                    ? 'bg-white text-purple-500'
-                                    : 'bg-purple-700'
+                                currentQuestionIndex === index ? 'bg-white text-purple-500' : 'bg-purple-700'
                             }`}
                             onClick={() => setCurrentQuestionIndex(index)}
                         >
@@ -69,10 +96,12 @@ const QuizPage = () => {
                     currentQuestionIndex={currentQuestionIndex}
                     handlePrev={handlePrev}
                     handleNext={handleNext}
+                    onTestEnd={handleTestEnd}
+                    updateSelectedOptions={updateSelectedOptions}
                 />
             </main>
             <footer className="w-full bg-purple-500 p-4 text-white flex justify-between items-center">
-                <button className="bg-gray-700 text-white font-bold py-2 px-4 rounded-lg">
+                <button className="bg-gray-700 text-white font-bold py-2 px-4 rounded-lg" onClick={handleTestEnd}>
                     End Test
                 </button>
             </footer>

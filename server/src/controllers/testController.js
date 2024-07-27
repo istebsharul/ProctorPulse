@@ -379,39 +379,61 @@ exports.submitTest = asyncErrors(async (req, res, next) => {
         // Check if timer is zero
         const testDetails = await Test.findById(testId);
         if (testDetails && testDetails.timer === 0) {
-            // Auto-submit if timer is zero
-            const submission = new TestSubmission({
-                userId,
-                testId,
-                answers,
-                submittedAt: new Date(),
-            });
-            await submission.save();
-
-            // Return success response
-            const response = new ApiResponse(200, {
-                message: 'Test submitted successfully.',
-            });
-            return res.status(200).json(response);
-        } else {
-            // Process submitted answers and save to the database
-            // Implementation depends on your data model and business logic
-
-            // Example: Saving answers to a database
-            const submission = new TestSubmission({
-                userId,
-                testId,
-                answers,
-                submittedAt: new Date(),
-            });
-            await submission.save();
-
-            // Return success response
-            const response = new ApiResponse(200, {
-                message: 'Test submitted successfully.',
-            });
-            return res.status(200).json(response);
+            const message = 'Test time is over.';
+            logger.error(message);
+            const response = new ApiResponse(400, null, message);
+            return res.status(400).json(response);
         }
+
+        // Process submitted answers
+        let totalScore = 0;
+        let attemptedQuestions = 0;
+        let skippedQuestions = 0;
+        const userResponses = [];
+
+        for (const answer of answers) {
+            const { questionId, answer: userAnswer } = answer;
+            console.log(`Processing questionId: ${questionId}, user_answer: ${userAnswer}`);
+            if (!questionId) continue;
+
+            const question = await Question.findById(questionId);
+            if (!question) continue;
+
+            userResponses.push({
+                question_id: questionId,
+                user_answer: userAnswer,
+            });
+
+            if (userAnswer === -1) {
+                skippedQuestions++;
+                console.log(`Skipped questionId: ${questionId}`);
+            } else {
+                attemptedQuestions++;
+                if (userAnswer === question.correct_answer) {
+                    totalScore += 1;
+                }
+            }
+        }
+
+        // Save the attempt details in the database
+        const userTestAttempt = new UserTestAttempt({
+            user_id: userId,
+            test_id: testId,
+            attempt_date: new Date(),
+            total_score: totalScore,
+            attempted_questions: attemptedQuestions,
+            skipped_questions: skippedQuestions,
+            user_response: userResponses,
+        });
+
+        await userTestAttempt.save();
+
+        // Return success response
+        const response = new ApiResponse(200, {
+            message: 'Test submitted successfully.',
+        });
+        return res.status(200).json(response);
+
     } catch (err) {
         // Handle errors
         logger.error(`Failed to submit test: ${err.message}`);

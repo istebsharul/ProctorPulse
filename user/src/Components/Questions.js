@@ -1,25 +1,29 @@
-import React, { useState, useEffect } from 'react'; // Import useState and useEffect
+import React, { useState, useEffect } from 'react';
 
-const Questions = ({ questions = [], currentQuestionIndex, handlePrev, handleNext }) => {
+const Questions = ({ questions = [], currentQuestionIndex, handlePrev, handleNext, onTestEnd, updateSelectedOptions }) => {
     const [selectedOption, setSelectedOption] = useState(null);
     const [seconds, setSeconds] = useState(59);
 
     useEffect(() => {
+        if (seconds === 0) {
+            onTestEnd(); // Trigger the end of the test
+            return;
+        }
+
         const timer = setInterval(() => {
-            setSeconds(prevSeconds => {
-                if (prevSeconds <= 0) {
-                    clearInterval(timer);
-                    return 0;
-                }
-                return prevSeconds - 1;
-            });
+            setSeconds(prevSeconds => prevSeconds - 1);
         }, 1000);
 
         return () => clearInterval(timer); // Cleanup on component unmount
-    }, []);
+    }, [seconds, onTestEnd]);
+
+    useEffect(() => {
+        setSelectedOption(null); // Clear selected option when moving to a new question
+    }, [currentQuestionIndex]);
 
     const handleOptionChange = (index) => {
         setSelectedOption(index);
+        updateSelectedOptions(currentQuestionIndex, index); // Update selected options in the parent component
     };
 
     const formatTime = (secs) => {
@@ -30,10 +34,12 @@ const Questions = ({ questions = [], currentQuestionIndex, handlePrev, handleNex
 
     if (questions.length === 0) {
         console.log("Questions are Empty");
-        return <div>Questions are Empty...</div>; // Or another loading state indicator
+        return <div>Questions are Empty...</div>;
     }
 
     const currentQuestion = questions[currentQuestionIndex];
+    const isFirstQuestion = currentQuestionIndex === 0;
+    const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
     return (
         <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-2xl">
@@ -63,13 +69,15 @@ const Questions = ({ questions = [], currentQuestionIndex, handlePrev, handleNex
             <div className="flex justify-between">
                 <button
                     onClick={handlePrev}
-                    className="bg-purple-600 text-white font-bold py-2 px-4 rounded-lg"
+                    disabled={isFirstQuestion}
+                    className={`bg-purple-600 text-white font-bold py-2 px-4 rounded-lg ${isFirstQuestion ? 'bg-gray-400 cursor-not-allowed' : ''}`}
                 >
                     Prev
                 </button>
                 <button
                     onClick={handleNext}
-                    className="bg-purple-600 text-white font-bold py-2 px-4 rounded-lg"
+                    disabled={isLastQuestion}
+                    className={`bg-purple-600 text-white font-bold py-2 px-4 rounded-lg ${isLastQuestion ? 'bg-gray-400 cursor-not-allowed' : ''}`}
                 >
                     Next
                 </button>
