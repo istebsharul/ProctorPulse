@@ -33,7 +33,6 @@ const Questions = ({ questions = [], currentQuestionIndex, handlePrev, handleNex
     };
 
     if (questions.length === 0) {
-        console.log("Questions are Empty");
         return <div>Questions are Empty...</div>;
     }
 
@@ -70,14 +69,14 @@ const Questions = ({ questions = [], currentQuestionIndex, handlePrev, handleNex
                 <button
                     onClick={handlePrev}
                     disabled={isFirstQuestion}
-                    className={`bg-purple-600 text-white font-bold py-2 px-4 rounded-lg ${isFirstQuestion ? 'bg-gray-400 cursor-not-allowed' : ''}`}
+                    className={`text-white font-bold py-2 px-4 rounded-lg ${isFirstQuestion ? 'bg-gray-400 cursor-not-allowed' : 'bg-purple-600'}`}
                 >
                     Prev
                 </button>
                 <button
                     onClick={handleNext}
                     disabled={isLastQuestion}
-                    className={`bg-purple-600 text-white font-bold py-2 px-4 rounded-lg ${isLastQuestion ? 'bg-gray-400 cursor-not-allowed' : ''}`}
+                    className={`text-white font-bold py-2 px-4 rounded-lg ${isLastQuestion ? 'bg-gray-400 cursor-not-allowed' : 'bg-purple-600'}`}
                 >
                     Next
                 </button>
