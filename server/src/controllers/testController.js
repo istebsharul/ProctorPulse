@@ -440,3 +440,56 @@ exports.submitTest = asyncErrors(async (req, res, next) => {
         return next(err);
     }
 });
+
+
+exports.getUserTestSubmitDetails = asyncErrors(async (req, res, next) => {
+    const userId = req.params.userId;
+    const testId = req.params.testId;
+    logger.info(req);
+
+    if (!isValidObjectId(userId)) {
+        message = `UserId ${userId} is not valid.`;
+        logger.error(message);
+        const response = new ApiResponse(400, null, message);
+        return res.status(400).json(response);
+    }
+    const doesUserExists = await isIdExists(User, userId);
+
+    logger.info(`doesUser: ${JSON.stringify(doesUserExists)}`);
+    if (!doesUserExists) {
+        message = `User with userId ${userId} does not exist.`;
+        logger.error(message);
+        const response = new ApiResponse(400, null, message);
+        return res.status(400).json(response);
+    }
+
+    if (!isValidObjectId(userId)) {
+        message = `testId ${testId} is not valid.`;
+        logger.error(message);
+        const response = new ApiResponse(400, null, message);
+        return res.status(400).json(response);
+    }
+    const doesTestExists = await isIdExists(Test, testId);
+
+    logger.info(`doesUser: ${doesTestExists}`);
+    if (!doesTestExists) {
+        message = `Test with testId ${testId} does not exist.`;
+        logger.error(message);
+        const response = new ApiResponse(400, null, message);
+        return res.status(400).json(response);
+    }
+
+    try {
+        const userTestSubmitDetails = await UserTestAttempt.findOne({
+            user_id: userId,
+            test_id: testId,
+        });
+        logger.info(userTestSubmitDetails);
+        response = new ApiResponse(200, userTestSubmitDetails);
+        return res.status(200).json(response);
+    } catch (err) {
+        message = `Failed to get the details of the test ${testId} of the user ${userId}. Reason: ${err}`;
+        logger.error(message);
+        return next(err);
+    }
+});

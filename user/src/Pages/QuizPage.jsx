@@ -55,7 +55,7 @@ const QuizPage = () => {
             const response = await axios.post(`/api/user/${userId}/test/${testId}/submit`, { answers: selectedOptions });
             console.log(`selected options: ${JSON.stringify(selectedOptions)}`)
             console.log('Test submitted successfully:', response.data);
-            navigate('/'); 
+            navigate('/result'); 
         } catch (error) {
             console.error('Error submitting test:', error);
         }
