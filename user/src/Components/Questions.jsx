@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
-const Questions = ({ questions = [], currentQuestionIndex, handlePrev, handleNext, onTestEnd, updateSelectedOptions }) => {
+const Questions = ({ questions = [], currentQuestionIndex, selectedOptions, handlePrev, handleNext, handleTestEnd, updateSelectedOptions }) => {
     const [selectedOption, setSelectedOption] = useState(null);
     const [seconds, setSeconds] = useState(59);
 
     useEffect(() => {
         if (seconds === 0) {
-            onTestEnd(); // Trigger the end of the test
+            handleTestEnd(); // Trigger the end of the test
             return;
         }
 
@@ -15,11 +15,12 @@ const Questions = ({ questions = [], currentQuestionIndex, handlePrev, handleNex
         }, 1000);
 
         return () => clearInterval(timer); // Cleanup on component unmount
-    }, [seconds, onTestEnd]);
+    }, [seconds, handleTestEnd]);
 
     useEffect(() => {
-        setSelectedOption(null); // Clear selected option when moving to a new question
-    }, [currentQuestionIndex]);
+        const currentSelectedOption = selectedOptions[currentQuestionIndex]?.answer;
+        setSelectedOption(currentSelectedOption);
+    }, [currentQuestionIndex, selectedOptions]);
 
     const handleOptionChange = (index) => {
         setSelectedOption(index);
@@ -74,11 +75,10 @@ const Questions = ({ questions = [], currentQuestionIndex, handlePrev, handleNex
                     Prev
                 </button>
                 <button
-                    onClick={handleNext}
-                    disabled={isLastQuestion}
-                    className={`text-white font-bold py-2 px-4 rounded-lg ${isLastQuestion ? 'bg-gray-400 cursor-not-allowed' : 'bg-purple-600'}`}
+                    onClick={isLastQuestion ? handleTestEnd : handleNext}
+                    className="text-white font-bold py-2 px-4 rounded-lg bg-purple-600"
                 >
-                    Next
+                    {isLastQuestion ? 'Submit' : 'Next'}
                 </button>
             </div>
         </div>

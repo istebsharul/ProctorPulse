@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Questions from '../Components/Questions';
+import QuestionNavigation from '../Components/QuestionNavigation';
 import { get_test_details } from '../Actions/testAction';
 
 const QuizPage = () => {
@@ -43,7 +44,9 @@ const QuizPage = () => {
     };
 
     const handleNext = () => {
-        if (currentQuestionIndex < questions.length - 1) setCurrentQuestionIndex(currentQuestionIndex + 1);
+        if (currentQuestionIndex < questions.length - 1) {
+            setCurrentQuestionIndex(currentQuestionIndex + 1);
+        }
     };
 
     const handleTestEnd = async () => {
@@ -66,37 +69,35 @@ const QuizPage = () => {
         );
     }, []);
 
+    const handleQuestionClick = (index) => {
+        setCurrentQuestionIndex(index - 1);
+    };
+
     if (loading) {
         return <div>Loading...</div>;
     }
 
     return (
-        <div className="min-h-screen bg-purple-100 flex flex-col items-center">
-            <header className="w-full bg-purple-500 p-4 text-white flex items-center justify-between">
-                <div className="flex space-x-2">
-                    {questions.map((_, index) => (
-                        <button
-                            key={index}
-                            className={`w-8 h-8 rounded-full ${
-                                currentQuestionIndex === index ? 'bg-white text-purple-500' : 'bg-purple-700'
-                            }`}
-                            onClick={() => setCurrentQuestionIndex(index)}
-                        >
-                            {index + 1}
-                        </button>
-                    ))}
-                </div>
+        <div className="min-h-screen bg-purple-100 flex flex-col items-center pt-14">
+            <header className="w-full bg-purple-500 p-4 text-white flex flex-col items-center justify-between space-y-2">
                 <div className="bg-purple-700 text-white text-sm font-bold py-1 px-3 rounded-full">
-                    19:40
+                    <div className="w-full flex justify-center">
+                        <QuestionNavigation
+                            currentQuestion={currentQuestionIndex + 1}
+                            totalQuestions={questions.length}
+                            onQuestionClick={handleQuestionClick}
+                        />
+                    </div>
                 </div>
             </header>
             <main className="flex-1 flex items-center justify-center w-full p-4">
                 <Questions
                     questions={questions}
                     currentQuestionIndex={currentQuestionIndex}
+                    selectedOptions={selectedOptions}
                     handlePrev={handlePrev}
                     handleNext={handleNext}
-                    onTestEnd={handleTestEnd}
+                    handleTestEnd={handleTestEnd}
                     updateSelectedOptions={updateSelectedOptions}
                 />
             </main>
