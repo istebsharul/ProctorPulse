@@ -41,6 +41,7 @@ export const login = (email, password) => {
             setCookie("jwt", token, 1); // Set cookie expiry for 1 day
             console.log(token);
             dispatch({ type: LOGIN_SUCCESS, payload: response.data });
+            return { isLoggedIn: true };
         } catch (error) {
             toast.error('Login Failed: ' + error.message);
             dispatch({ type: LOGIN_FAILURE, payload: error.message });
@@ -53,7 +54,7 @@ export const loadUser = () => async (dispatch) => {
         const { data } = await axios.get(
             "api/user/profile"
         );
-        console.log("data retrieved using loadUser", data);
+        // console.log("data retrieved using loadUser", data);
         toast.success('User data loaded successfully');
         dispatch({ type: LOAD_SUCCESS, payload: data.user });
     } catch (error) {

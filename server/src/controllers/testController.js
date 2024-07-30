@@ -139,6 +139,40 @@ exports.getAvailableTests = asyncErrors(async (req, res, next) => {
     }
 });
 
+exports.getAvailableTestsUser = asyncErrors(async (req, res, next) => {
+    const userId = req.params.userId;
+    logger.info(`RequestBody: ${userId}`);
+
+    if (!isValidObjectId(userId)) {
+        const message = `UserId ${userId} is not valid.`;
+        logger.error(message);
+        const response = new ApiResponse(400, null, message);
+        return res.status(400).json(response);
+    }
+
+    const doesUserExists = await isIdExists(User, userId);
+
+    logger.info(`doesUser: ${doesUserExists}`);
+    if (!doesUserExists) {
+        const message = `User with userId ${userId} does not exist.`;
+        logger.error(message);
+        const response = new ApiResponse(400, null, message);
+        return res.status(400).json(response);
+    }
+
+    try {
+        const availableTests = await Test.find({ users: userId }); // Optional: Populate questions with their titles
+        logger.info('Available tests fetched successfully.');
+
+        const response = new ApiResponse(200, availableTests);
+        return res.status(200).json(response);
+    } catch (err) {
+        const message = `Failed to fetch available tests for User with UserId ${userId}. Reason: ${err.message}`;
+        logger.error(message);
+        return next(err);
+    }
+});
+
 // Get Test Details -> Fetching all the question of the Test
 exports.getTestDetails = asyncErrors(async (req, res, next) => {
     const userId = req.params.userId;
@@ -239,10 +273,10 @@ exports.createTest = asyncErrors(async (req, res, next) => {
             return next(new Error(errorMessage));
         }
     }
-    console.log("name:",testName, "subject:",subject,"duration:", duration,"questions:", questions,"allowed Users:", allowedUsers,)
+    console.log("name:", testName, "subject:", subject, "duration:", duration, "questions:", questions, "allowed Users:", allowedUsers,)
 
     const newTest = new Test({
-        name:testName,
+        name: testName,
         subject,
         duration,
         questions: questionIds,
@@ -257,32 +291,32 @@ exports.createTest = asyncErrors(async (req, res, next) => {
     return res.status(201).json({ message: successMessage, test: newTest });
 });
 
-exports.submitTest = asyncErrors(async (req, res, next) => {
-    const { userId, testId, userResponses, duration } = req.body;
+// exports.submitTest = asyncErrors(async (req, res, next) => {
+//     const { userId, testId, userResponses, duration } = req.body;
 
-    const total_score = await calculateScore(userResponses, testId);
+//     const total_score = await calculateScore(userResponses, testId);
 
-    logger.info(
-        `Total score for user ${userId} in test ${testId}: ${total_score}`
-    );
+//     logger.info(
+//         `Total score for user ${userId} in test ${testId}: ${total_score}`
+//     );
 
-    const newUserAttempt = new UserAttempt({
-        userId,
-        testId,
-        userResponses,
-        total_score,
-        duration,
-    });
+//     const newUserAttempt = new UserAttempt({
+//         userId,
+//         testId,
+//         userResponses,
+//         total_score,
+//         duration,
+//     });
 
-    const savedUserAttempt = await newUserAttempt.save();
+//     const savedUserAttempt = await newUserAttempt.save();
 
-    const successMessage = 'User response saved successfully';
-    const response = new ApiResponse(200, savedUserAttempt, successMessage);
-    logger.info(successMessage);
-    res.status(201).json({
-        response,
-    });
-});
+//     const successMessage = 'User response saved successfully';
+//     const response = new ApiResponse(200, savedUserAttempt, successMessage);
+//     logger.info(successMessage);
+//     res.status(201).json({
+//         response,
+//     });
+// });
 
 exports.getTestResponses = asyncErrors(async (req, res, next) => {
     const { testId } = req.params;
@@ -375,15 +409,19 @@ exports.submitTest = asyncErrors(async (req, res, next) => {
         return res.status(400).json(response);
     }
 
+
     try {
         // Check if timer is zero
         const testDetails = await Test.findById(testId);
+
         if (testDetails && testDetails.timer === 0) {
             const message = 'Test time is over.';
             logger.error(message);
             const response = new ApiResponse(400, null, message);
             return res.status(400).json(response);
         }
+
+
 
         // Process submitted answers
         let totalScore = 0;
@@ -392,7 +430,7 @@ exports.submitTest = asyncErrors(async (req, res, next) => {
         const userResponses = [];
 
         for (const answer of answers) {
-            const { questionId, answer: userAnswer } = answer;
+            const { questionId, user_answer: userAnswer } = answer;
             console.log(`Processing questionId: ${questionId}, user_answer: ${userAnswer}`);
             if (!questionId) continue;
 
@@ -414,6 +452,10 @@ exports.submitTest = asyncErrors(async (req, res, next) => {
                 }
             }
         }
+
+        console.log("Total Score", totalScore);
+        console.log("Attempt Question", attemptedQuestions);
+        console.log("Skipped Question", skippedQuestions);
 
         // Save the attempt details in the database
         const userTestAttempt = new UserTestAttempt({
@@ -440,7 +482,6 @@ exports.submitTest = asyncErrors(async (req, res, next) => {
         return next(err);
     }
 });
-
 
 exports.getUserTestSubmitDetails = asyncErrors(async (req, res, next) => {
     const userId = req.params.userId;
@@ -491,5 +532,23 @@ exports.getUserTestSubmitDetails = asyncErrors(async (req, res, next) => {
         message = `Failed to get the details of the test ${testId} of the user ${userId}. Reason: ${err}`;
         logger.error(message);
         return next(err);
+    }
+});
+
+exports.isAttempted = asyncErrors(async (req, res) => {
+    const { userId, testId } = req.body;
+
+    try {
+        const userAttempted = await UserTestAttempt.findOne({ user_id: userId, test_id: testId });
+
+        if (userAttempted) {
+            logger.info("User Already Attempted Test!");
+            return res.status(200).json({attempted:true});
+        }
+
+        return res.status(200).json({attempted:false});
+    } catch (error) {
+        logger.error(error.message);
+        return next(error);
     }
 });

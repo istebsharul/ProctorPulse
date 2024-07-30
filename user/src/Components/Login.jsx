@@ -4,18 +4,27 @@ import { useDispatch, useSelector } from "react-redux";
 import { login } from "../Actions/userActions";
 import image1 from "../Assets/image1.png";
 import image2 from "../Assets/image2.png";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const error = useSelector((state) => state.error);
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(login(email, password))
-      .then(() => {
+      .then((result) => {
+        console.log(result);
         // Assuming login action sets isLoggedIn in Redux state
+        if (result && result.isLoggedIn) {
+          console.log("Result",result);
+          // console.log("ResultPayload",result.payload);
+          console.log("ResultIsLoggedIn",result.isLoggedIn);
+          navigate('/');
+        }
       })
       .catch((error) => {
         console.error("Login error:", error);

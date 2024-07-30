@@ -23,7 +23,7 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <Router>
-        <div className='bg-purple-200 lg:h-19 md:h-12'>
+        <div className='bg-white lg:h-19 md:h-12'>
           <Navbar />
           <App />
           <Routes>

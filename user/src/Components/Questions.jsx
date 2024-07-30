@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { FaClock } from 'react-icons/fa';
+import { SlArrowLeft, SlArrowRight } from 'react-icons/sl';
 
 const Questions = ({ questions = [], currentQuestionIndex, selectedOptions, handlePrev, handleNext, handleTestEnd, updateSelectedOptions }) => {
     const [selectedOption, setSelectedOption] = useState(null);
@@ -18,8 +20,9 @@ const Questions = ({ questions = [], currentQuestionIndex, selectedOptions, hand
     }, [seconds, handleTestEnd]);
 
     useEffect(() => {
-        const currentSelectedOption = selectedOptions[currentQuestionIndex]?.answer;
+        const currentSelectedOption = selectedOptions[currentQuestionIndex]?.user_answer;
         setSelectedOption(currentSelectedOption);
+        // console.log(currentQuestionIndex,currentSelectedOption);
     }, [currentQuestionIndex, selectedOptions]);
 
     const handleOptionChange = (index) => {
@@ -45,7 +48,8 @@ const Questions = ({ questions = [], currentQuestionIndex, selectedOptions, hand
         <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-2xl">
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold">{currentQuestion.title}</h2>
-                <div className="bg-purple-500 text-white text-sm font-bold py-1 px-3 rounded-full">
+                <div className="flex justify-center items-center bg-red-500 text-white text-sm font-bold py-1 px-3 rounded-full">
+                    <FaClock className='mr-1'/>
                     {formatTime(seconds)}
                 </div>
             </div>
@@ -70,15 +74,17 @@ const Questions = ({ questions = [], currentQuestionIndex, selectedOptions, hand
                 <button
                     onClick={handlePrev}
                     disabled={isFirstQuestion}
-                    className={`text-white font-bold py-2 px-4 rounded-lg ${isFirstQuestion ? 'bg-gray-400 cursor-not-allowed' : 'bg-purple-600'}`}
+                    className={`flex justify-center items-center text-white font-bold py-2 pl-4 pr-6 rounded-lg ${isFirstQuestion ? 'bg-gray-400 cursor-not-allowed' : 'bg-purple-900'}`}
                 >
+                    <SlArrowLeft className='text-sm mx-1'/>
                     Prev
                 </button>
                 <button
                     onClick={isLastQuestion ? handleTestEnd : handleNext}
-                    className="text-white font-bold py-2 px-4 rounded-lg bg-purple-600"
+                    className="flex justify-center items-center text-white font-bold py-2 pl-6 pr-4 rounded-lg bg-purple-900"
                 >
                     {isLastQuestion ? 'Submit' : 'Next'}
+                    <SlArrowRight className='font-bold text-sm ml-1'/>
                 </button>
             </div>
         </div>
