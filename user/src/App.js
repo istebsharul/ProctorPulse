@@ -10,7 +10,7 @@ function App() {
     const isLoggedIn = useSelector(state => state.auth.isAuthenticated);
 
     useEffect(() => {
-        console.log("Authenticated - App", isLoggedIn);
+        // console.log("Authenticated - App", isLoggedIn);
         store.dispatch(loadUser());
     }, [isLoggedIn]);
 

@@ -14,7 +14,7 @@ const questionSchema = new Schema(
             },
         ],
         correct_answer: {
-            type: String,
+            type: Number,
             required: true,
         },
     },

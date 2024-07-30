@@ -11,17 +11,19 @@ import ProtectedRoute from "./Utils/ProtectedRoute";
 import HomePage from "./Pages/HomePage";
 import LoginPage from "./Pages/LoginPage";
 import SignupPage from "./Pages/SignupPage";
+import QuizPage from './Pages/QuizPage';
 import ForgotPasswordPage from "./Pages/ForgotPasswordPage";
 import Profile from "./Pages/Profile";
 import TestPage from "./Pages/TestPage";
 import ResetPasswordPage from './Pages/ResetPasswordPage';
+import ResultPage from './Pages/ResultPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <Provider store={store}>
       <Router>
-        <div className='bg-purple-200 lg:h-19 md:h-12'>
+        <div className='bg-white lg:h-19 md:h-12'>
           <Navbar />
           <App />
           <Routes>
@@ -30,6 +32,8 @@ root.render(
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
             <Route path="/password/reset/:token" element={<ResetPasswordPage/>}/>
+            <Route path="/quiz" element={<QuizPage />} />
+            <Route path="/result" element={<ResultPage />} />
             <Route element={<ProtectedRoute />}>
               <Route path="/profile" element={<Profile />} />
               <Route path="/test" element={<TestPage />} />
