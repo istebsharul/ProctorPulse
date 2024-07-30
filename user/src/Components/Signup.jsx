@@ -9,7 +9,6 @@ function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [userType, setUserType] = useState("");
   const [name, setName] = useState("");
   const [organisation,setOrganisation] = useState("");
   const dispatch = useDispatch();
@@ -17,7 +16,7 @@ function Signup() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(signup(name, email, password, userType,organisation));
+    dispatch(signup(name, email, password,organisation));
   };
 
   return (
@@ -41,35 +40,6 @@ function Signup() {
                 Create an Account, It takes less than a minute. Enter your
                 Credentials.
               </h3>
-            </div>
-            <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0 md:space-x-4">
-              <div className="w-full border border-gray-300 rounded-2xl px-5 py-2.5 focus:outline-none focus:border-purple-500 flex ">
-                <input
-                  type="radio"
-                  id="student"
-                  name="userType"
-                  value="student"
-                  checked={userType === "student"}
-                  onChange={(e) => setUserType(e.target.value)}
-                />
-                <label className="px-2" htmlFor="student">
-                  Student
-                </label>
-              </div>
-
-              <div className="w-full border border-gray-300 rounded-2xl px-5 py-2.5 focus:outline-none focus:border-purple-500 flex">
-                <input
-                  type="radio"
-                  id="teacher"
-                  name="userType"
-                  value="teacher"
-                  checked={userType === "teacher"}
-                  onChange={(e) => setUserType(e.target.value)}
-                />
-                <label className="px-2" htmlFor="teacher">
-                  Teacher
-                </label>
-              </div>
             </div>
             <input
               type="text"

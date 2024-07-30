@@ -29,7 +29,7 @@ export const login = (email, password) => {
   return async (dispatch) => {
     try {
       // Simulate API call for login
-      const endpoint = 'api/admin/login'
+      const endpoint = 'api/admin/login';
       const response = await axios.post(
         endpoint,
         { email, password }
@@ -61,22 +61,22 @@ export const loadAdmin = () => async (dispatch) => {
   }
 };
 
-export const signup = (name, email, password,userType,organisation) => {
+export const signup = (name, email, password,organisation) => {
   return async (dispatch) => {
     try {
-      if (!name || !email || !password || !userType || !organisation) {
+      if (!name || !email || !password || !organisation) {
         toast.error('All fields are required');
         return;
       }
 
-      console.log(name,email,password,userType,organisation);
+      console.log(name,email,password,organisation);
       // Simulate API call for signup
 
-      const endpoint = userType === 'teacher' ? 'api/admin/register':'api/user/register';
+      const endpoint = 'api/admin/register';
 
       const response = await axios.post(
         endpoint,
-        { name, email, password,organisation }
+        { name, email, password, organisation }
       );
       console.log("Response",response);
       toast.success('User Created Successfully');

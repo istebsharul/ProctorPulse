@@ -6,6 +6,8 @@ const sendToken = require('../utils/JWTtoken');
 const logger = require('../utils/logger');
 const sendMail = require('../utils/sendEmail');
 const crypto = require('crypto');
+const cloudinary = require('../config/cloudinary.js');
+
 // const cloudinary = require("cloudinary");
 
 /**
@@ -202,10 +204,9 @@ exports.updatePassword = asyncErrors(async (req, res, next) => {
 
 //LoggedInUser
 exports.userProfile = asyncErrors(async (req, res, next) => {
-    //let username = req.params.username;
 
     // Find the user by username
-    console.log(req.user._id);
+    console.log("User Id",req.user._id);
 
     const user = await User.findById(req.user._id);
 
@@ -216,7 +217,7 @@ exports.userProfile = asyncErrors(async (req, res, next) => {
     }
 
     // If user is found, log an info message
-    logger.info(`User profile retrieved for username`);
+    logger.info(`User profile retrieved for username ${user.imageUrl}`);
 
     // If user is found, return user profile
     res.status(200).json({ success: true, user });
@@ -224,33 +225,42 @@ exports.userProfile = asyncErrors(async (req, res, next) => {
 
 //Update User Profile
 exports.updateProfile = asyncErrors(async (req, res, next) => {
-    const { name, email } = req.body;
-
-    // Check if name and email are provided
-    if (!name || !email) {
-        return next(
-            new ErrorHandler('Please provide your name and email', 400)
-        );
-    }
-
-    // Find the user by their id
+    
     const user = await User.findById(req.user.id);
-    console.log(req.user.id);
+    logger.info(user);
 
-    //If no user is found, return an error
-    if (!user) {
-        logger.error('User not found');
-        return res.status(404).json({ message: 'User not found' });
+    if(user){
+        user.name = req.body.name || user.name;
+        user.email = req.body.email || user.email;
+        user.organisation = req.body.organisation || user.organisation;
+
+        // console.log("User Organisation",user.organisation);
+        if(req.body.imageUrl){
+            const uploadedResponse = await cloudinary.uploader.upload(req.body.imageUrl,{
+                upload_preset: 'ml_default',
+            });
+
+            user.imageUrl = uploadedResponse.secure_url;
+        }
+
+        console.log("Image Url",user.imageUrl);
+
+        if(req.body.password){
+            user.password = req.body.password;
+        }
+
+        const updatedUser = await user.save();
+
+        res.status(200).json({
+            id:updatedUser._id,
+            name:updatedUser.name,
+            email:updatedUser.email,
+            organisation:updatedUser.organisation,
+            imageUrl:updatedUser.imageUrl,
+            token: updatedUser.getJWTToken(),
+        });
+    }else{
+        res.status(404);
+        throw new Error('User not found!');
     }
-
-    // Update user's name and email with new values
-    user.name = name;
-    user.email = email;
-
-    // Saving the user to the database
-    await user.save();
-    logger.info('Profile updated successfully');
-
-    // Return a success response
-    res.status(200).json({ message: 'Profile updated successfully', user });
 });

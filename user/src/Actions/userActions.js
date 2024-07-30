@@ -14,6 +14,8 @@ import {
     LOGOUT_FAILURE,
     RESET_PASSWORD_SUCCESS,
     RESET_PASSWORD_FAILURE,
+    UPDATE_PROFILE_FAILURE,
+    UPDATE_PROFILE_SUCCESS
 } from '../Constants/userConstants';
 
 // Function to set cookie
@@ -52,9 +54,9 @@ export const login = (email, password) => {
 export const loadUser = () => async (dispatch) => {
     try {
         const { data } = await axios.get(
-            "api/user/profile"
+            "http://localhost:3000/api/user/profile"
         );
-        // console.log("data retrieved using loadUser", data);
+        console.log("data retrieved using loadUser", data);
         toast.success('User data loaded successfully');
         dispatch({ type: LOAD_SUCCESS, payload: data.user });
     } catch (error) {
@@ -63,13 +65,13 @@ export const loadUser = () => async (dispatch) => {
     }
 };
 
-export const signup = (name, email, password, userType, organisation) => {
+export const signup = (name, email, password, organisation) => {
     return async (dispatch) => {
         try {
-            console.log(name, email, password, userType, organisation);
+            console.log(name, email, password, organisation);
             // Simulate API call for signup
 
-            const endpoint = userType === 'teacher' ? 'api/admin/register' : 'api/user/register';
+            const endpoint = 'api/user/register';
 
             const response = await axios.post(
                 endpoint,
@@ -98,7 +100,6 @@ export const logout = () => async (dispatch) => {
       dispatch({ type: LOGOUT_FAILURE, payload: error.message });
     }
 };
-
 
 export const forgotPassword = (email) => {
     return async (dispatch) => {
@@ -138,4 +139,28 @@ export const resetPassword = (password,confirmPassword,token) => {
             dispatch({type:RESET_PASSWORD_FAILURE, payload: error.message});
         }
     }
-}
+};
+
+export const updateProfile = (formData) => {
+    return async (dispatch) => {
+      try {
+        const response = await toast.promise(
+          axios.put("http://localhost:3000/api/user/profile/update", {
+            name: formData.name,
+            email: formData.email,
+            organisation: formData.organisation,
+            imageUrl: formData.imageUrl
+          }),
+          {
+            loading: 'Updating profile...',
+            success: 'Profile Updated Successfully',
+            error: 'Error updating profile',
+          }
+        );
+  
+        dispatch({ type: UPDATE_PROFILE_SUCCESS, payload: response.data });
+      } catch (error) {
+        dispatch({ type: UPDATE_PROFILE_FAILURE, payload: error.message });
+      }
+    }
+};

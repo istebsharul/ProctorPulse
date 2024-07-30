@@ -13,10 +13,11 @@ import LoginPage from "./Pages/LoginPage";
 import SignupPage from "./Pages/SignupPage";
 import QuizPage from './Pages/QuizPage';
 import ForgotPasswordPage from "./Pages/ForgotPasswordPage";
-import Profile from "./Pages/Profile";
+import ProfilePage from "./Pages/ProfilePage";
 import TestPage from "./Pages/TestPage";
 import ResetPasswordPage from './Pages/ResetPasswordPage';
 import ResultPage from './Pages/ResultPage';
+import EditProfilePage from './Pages/EditProfilePage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -35,7 +36,8 @@ root.render(
             <Route path="/quiz" element={<QuizPage />} />
             <Route path="/result" element={<ResultPage />} />
             <Route element={<ProtectedRoute />}>
-              <Route path="/profile" element={<Profile />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/profile/edit" element={<EditProfilePage/>}/>
               <Route path="/test" element={<TestPage />} />
             </Route>
           </Routes>

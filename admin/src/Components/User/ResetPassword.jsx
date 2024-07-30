@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { resetPassword } from "../../Actions/userActions";
+import { resetPassword } from "../../Actions/adminActions";
 import image1 from "../../Assets/image1.png";
 import { useParams } from "react-router-dom";
 

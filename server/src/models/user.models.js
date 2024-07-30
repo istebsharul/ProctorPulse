@@ -24,17 +24,15 @@ const userSchema = new mongoose.Schema(
             minLength: [8, 'Password must be atleast 8 characters'],
             select: false,
         },
-        avatar: {
-            public_id: {
-                type: String,
-                required: false,
-            },
-            url: {
-                type: String,
-                required: false,
-            },
+        organisation: {
+            type: String,
+            required: [true, 'Please enter your organization name'],
+            maxLength: [50, 'Organization name must be within 50 characters'],
         },
-
+        imageUrl:{
+            type:String,
+            required:false
+        },
         resetPasswordToken: String,
         resetPasswordExpire: Date,
     },
