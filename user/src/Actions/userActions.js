@@ -54,9 +54,9 @@ export const login = (email, password) => {
 export const loadUser = () => async (dispatch) => {
     try {
         const { data } = await axios.get(
-            "http://localhost:3000/api/user/profile"
+            "/api/user/profile"
         );
-        console.log("data retrieved using loadUser", data);
+        // console.log("data retrieved using loadUser", data);
         toast.success('User data loaded successfully');
         dispatch({ type: LOAD_SUCCESS, payload: data.user });
     } catch (error) {
@@ -128,7 +128,7 @@ export const resetPassword = (password,confirmPassword,token) => {
             console.log("token",token);
 
             const response = await axios.put(
-                `http://localhost:4000/api/user/password/reset/${token}`,
+                `/api/user/password/reset/${token}`,
                 {password,confirmPassword}
             );
             toast.success("Password Reset Successfully");
@@ -145,7 +145,7 @@ export const updateProfile = (formData) => {
     return async (dispatch) => {
       try {
         const response = await toast.promise(
-          axios.put("http://localhost:3000/api/user/profile/update", {
+          axios.put("/api/user/profile/update", {
             name: formData.name,
             email: formData.email,
             organisation: formData.organisation,

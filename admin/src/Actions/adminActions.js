@@ -52,7 +52,7 @@ export const login = (email, password) => {
 export const loadAdmin = () => async (dispatch) => {
   try {
     const { data } = await axios.get(
-      "http://localhost:3000/api/admin/profile"
+      "/api/admin/profile"
     );
 
     dispatch({ type: LOAD_SUCCESS, payload: data.admin });
@@ -128,7 +128,7 @@ export const resetPassword = (password,confirmPassword,token) => {
   return async (dispatch) =>{
     try {
       const response = await axios.put(
-        `http://localhost:4000/api/admin/password/reset/${token}`,
+        `/api/admin/password/reset/${token}`,
         {password,confirmPassword}
       );
       toast.success("Password Reset Successfully");
@@ -145,7 +145,7 @@ export const updateProfile = (formData) => {
   return async (dispatch) => {
     try {
       const response = await toast.promise(
-        axios.put("http://localhost:3000/api/admin/profile/update", {
+        axios.put("/api/admin/profile/update", {
           name: formData.name,
           email: formData.email,
           organisation: formData.organisation,

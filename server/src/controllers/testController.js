@@ -285,7 +285,7 @@ exports.createTest = asyncErrors(async (req, res, next) => {
     });
 
     await newTest.save();
-
+    
     const successMessage = 'Test created successfully';
     logger.info(successMessage);
     return res.status(201).json({ message: successMessage, test: newTest });
@@ -318,24 +318,62 @@ exports.createTest = asyncErrors(async (req, res, next) => {
 //     });
 // });
 
+// exports.getTestResponses = asyncErrors(async (req, res, next) => {
+//     const { testId } = req.params;
+
+//     // Find all user attempts for the given testId
+//     const userAttempts = await UserTestAttempt.find({ test_id:testId });
+//     // Extract user IDs from userAttempts
+//     const userIds = userAttempts.map((attempt) => attempt.user_id);
+
+//     // Find users based on extracted userIds
+//     const users = await User.find({ _id: { $in: userIds } }).exec();
+
+//     // Log successful retrieval
+//     logger.info(`Successfully retrieved users who attempted test ${testId}`);
+
+//     // Respond with the found users
+//     res.json({ users });
+// });
+
 exports.getTestResponses = asyncErrors(async (req, res, next) => {
-    const { testId } = req.params;
+    try {
+        const { testId } = req.params;
 
-    // Find all user attempts for the given testId
-    const userAttempts = await UserAttempt.find({ testId }).exec();
+        // Find all user attempts for the given testId and populate user details in a single query
+        const userAttempts = await UserTestAttempt.find({ test_id: testId }).populate('user_id', 'username');
 
-    // Extract user IDs from userAttempts
-    const userIds = userAttempts.map((attempt) => attempt.userId);
+        if (!userAttempts || userAttempts.length === 0) {
+            logger.warn(`No attempts found for test ${testId}`);
+            return res.status(404).json({ message: 'No attempts found for this test' });
+        }
 
-    // Find users based on extracted userIds
-    const users = await User.find({ _id: { $in: userIds } }).exec();
+        logger.info(userAttempts);
 
-    // Log successful retrieval
-    logger.info(`Successfully retrieved users who attempted test ${testId}`);
+        // Sort user attempts based on total_score in descending order
+        userAttempts.sort((a, b) => b.total_score - a.total_score);
+    
+        // Extract username and total_score from sorted userAttempts
+        const users = userAttempts.map(attempt => ({
+            user_id: attempt.user_id,
+            total_score: attempt.total_score,
+            user_response: attempt.user_response,
+            user_imageUrl: attempt.user_imageUrl,
+            user_name: attempt.user_name,
+        }));
 
-    // Respond with the found users
-    res.json({ users });
+        // Log successful retrieval
+        logger.info(`Successfully retrieved and sorted users who attempted test ${testId}`);
+
+        // Respond with the sorted users
+        res.json({ users });
+    } catch (error) {
+        logger.error(`Error retrieving test responses: ${error.message}`);
+        next(error);
+    }
 });
+
+
 
 exports.testUserResponses = asyncErrors(async (req, res, next) => {
     const { testId, userId } = req.params;
@@ -367,7 +405,7 @@ exports.testUserResponses = asyncErrors(async (req, res, next) => {
 exports.submitTest = asyncErrors(async (req, res, next) => {
     const userId = req.params.userId;
     const testId = req.params.testId;
-    const { answers } = req.body;
+    const { answers,user_name, user_imageUrl } = req.body;
     console.log(answers);
 
     // Validate request body schema
@@ -460,6 +498,8 @@ exports.submitTest = asyncErrors(async (req, res, next) => {
         // Save the attempt details in the database
         const userTestAttempt = new UserTestAttempt({
             user_id: userId,
+            user_name,
+            user_imageUrl,
             test_id: testId,
             attempt_date: new Date(),
             total_score: totalScore,
