@@ -15,6 +15,8 @@ const QuizPage = () => {
     const navigate = useNavigate();
     const auth = useSelector(state => state.auth);
     const userId = auth.user ? auth.user._id : null;
+    const user_name = auth.user? auth.user.name: "title";
+    const user_imageUrl = auth.user ? auth.user.imageUrl : logo;
     const testData = useSelector(state => state.test || {});
     const questions = useMemo(() => testData.test || [], [testData]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -116,12 +118,12 @@ const QuizPage = () => {
         alert('The test has ended!');
         // setShowEndDisclaimer(true);
         try {
-            const response = await axios.post(`/api/user/${userId}/test/${testId}/submit`, { answers: selectedOptions });
+            const response = await axios.post(`/api/user/${userId}/test/${testId}/submit`, { answers: selectedOptions, user_name, user_imageUrl });
             console.log(`selected options: ${JSON.stringify(selectedOptions)}`);
             console.log('Test submitted successfully:', response.data);
             // exitFullscreen(); // Exit fullscreen when test ends
             // if(showEndDisclaimer){
-                navigate(`/result?testId=${testId}`);
+            navigate(`/result?testId=${testId}`);
             // }
         } catch (error) {
             console.error('Error submitting test:', error);

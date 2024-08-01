@@ -1,15 +1,10 @@
-import React, { useEffect } from "react";
-import { Outlet, Navigate } from "react-router-dom";
+import React from "react";
 import { useSelector } from "react-redux";
+import { Outlet, Navigate } from "react-router-dom";
 
 const ProtectedRoute = () => {
-    const isLoggedIn = useSelector(state => state.auth.isAuthenticated);
-
-    useEffect(() => {
-        console.log("ProtectedRoute - isLoggedIn:", isLoggedIn);
-    }, [isLoggedIn]);
-
-    return isLoggedIn ? <Outlet /> : <Navigate to="/login" />;
+  const isLoggedIn = useSelector(state=>state.auth.isAuthenticated);
+  return <div>{isLoggedIn ? <Outlet /> : <Navigate to="/" />}</div>;
 };
 
 export default ProtectedRoute;

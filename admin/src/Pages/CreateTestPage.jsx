@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import TestDetailsPart from '../Components/Tests/TestDetailsPart';
-import QuestionsPart from '../Components/Tests/QuestionsPart';
+import TestDetailsPart from '../Components/CreateTests/TestDetailsPart';
+import QuestionsPart from '../Components/CreateTests/QuestionsPart';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../Components/Modal';
 

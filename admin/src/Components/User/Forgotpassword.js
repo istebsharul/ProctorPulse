@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { forgotPassword } from "../../Actions/userActions";
+import { forgotPassword } from "../../Actions/adminActions";
 import image1 from "../../Assets/image1.png";
 
 function Forgotpassword() {
@@ -12,6 +12,7 @@ function Forgotpassword() {
     e.preventDefault();
     dispatch(forgotPassword(email));
   };
+  
   return (
     <>
       <div className="flex flex-wrap justify-center items-center bg-purple-200">

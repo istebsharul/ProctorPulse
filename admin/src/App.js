@@ -1,7 +1,7 @@
 import { Toaster } from "react-hot-toast";
 import './App.css';
 import { useEffect } from "react";
-import { loadAdmin } from "./Actions/userActions";
+import { loadAdmin } from "./Actions/adminActions";
 import store from "./Store/store";
 import { useSelector } from "react-redux";
 // import TestPage from "./Pages/TestPage";

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { FaEnvelope, FaUniversity } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { updateProfile } from '../Actions/adminActions'; // Replace with your actual action
+import { updateProfile } from '../Actions/userActions'; // Replace with your actual action
 import profilepicture from '../Assets/profile.png';
 
 const EditProfilePage = () => {

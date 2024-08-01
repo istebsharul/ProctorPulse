@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { FaChartBar, FaTrash } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+// import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { checkTestAttempted } from '../../Actions/testAction';
-import {toast} from 'react-hot-toast';
+// import {toast} from 'react-hot-toast';
 
 function Test({ id, title, description, duration, dueDate }) {
   const [expired, setExpired] = useState(false);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const user = useSelector((state) => state.auth.user);
-  const userId = user?._id;
+//   const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
     // console.log(id);
@@ -21,18 +18,18 @@ function Test({ id, title, description, duration, dueDate }) {
   }, [dueDate]);
 
   const handleTestClick = async () => {
-    try {
-      const attempted = await dispatch(checkTestAttempted({ userId, testId: id }));
-      console.log(attempted);
-      if (!attempted) {
-        navigate(`/quiz?testId=${id}`);
-      } else {
-        toast.error("You have Already Attempted the Test!")
-        console.log("User has already attempted the test.");
-      }
-    } catch (error) {
-      console.error("Error checking test attempt:", error);
-    }
+    // try {
+    //   const attempted = await dispatch(checkTestAttempted({ userId, testId: id }));
+    //   console.log(attempted);
+    //   if (!attempted) {
+    //     navigate(`/quiz?testId=${id}`);
+    //   } else {
+    //     toast.error("You have Already Attempted the Test!")
+    //     console.log("User has already attempted the test.");
+    //   }
+    // } catch (error) {
+    //   console.error("Error checking test attempt:", error);
+    // }
   };
 
   const handleDeleteTest = (e) => {

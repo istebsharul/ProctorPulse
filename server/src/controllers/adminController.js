@@ -241,6 +241,8 @@ exports.updateProfileAdmin = asyncErrors(async (req, res, next) => {
             admin.imageUrl = uploadedResponse.secure_url;
         }
 
+        console.log("Admin Image URL",admin.imageUrl);
+
         if (req.body.password) {
             admin.password = req.body.password;
         }
