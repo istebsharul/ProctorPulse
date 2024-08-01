@@ -253,43 +253,94 @@ exports.deleteTest = asyncErrors(async (req, res, next) => {
     return res.status(200).json({ message: successMessage });
 });
 
+// exports.createTest = asyncErrors(async (req, res, next) => {
+//     const { testName, subject, duration, questions, allowedUsers } = req.body;
+
+//     const questionIds = [];
+
+//     console.log(questions);
+
+//     for (const questionData of questions) {
+//         const response = await createQuestion({ body: questionData });
+
+//         if (response && response._id) {
+//             // console.log("hello",response._id);
+//             questionIds.push(response._id);
+//             // console.log("Questions Id", questionIds);
+//         } else {
+//             const errorMessage = 'Failed to create question';
+//             logger.error(errorMessage);
+//             return next(new Error(errorMessage));
+//         }
+//     }
+//     console.log("name:", testName, "subject:", subject, "duration:", duration, "questions:", questions, "allowed Users:", allowedUsers,)
+
+//     const newTest = new Test({
+//         name: testName,
+//         subject,
+//         duration,
+//         questions: questionIds,
+//         users: allowedUsers,
+//         createdBy: req.admin._id,
+//     });
+
+//     await newTest.save();
+
+//     const successMessage = 'Test created successfully';
+//     logger.info(successMessage);
+//     return res.status(201).json({ message: successMessage, test: newTest });
+// });
+
+const crypto = require('crypto');
+
 exports.createTest = asyncErrors(async (req, res, next) => {
-    const { testName, subject, duration, questions, allowedUsers } = req.body;
+    const { name, subject, duration, questions, allowedUsers } = req.body;
+    const testName = name
+   //console.log(req.body)
 
     const questionIds = [];
 
-    console.log(questions);
-
     for (const questionData of questions) {
         const response = await createQuestion({ body: questionData });
+        // console.log(response)
 
         if (response && response._id) {
-            // console.log("hello",response._id);
             questionIds.push(response._id);
-            // console.log("Questions Id", questionIds);
         } else {
             const errorMessage = 'Failed to create question';
             logger.error(errorMessage);
             return next(new Error(errorMessage));
         }
     }
-    console.log("name:", testName, "subject:", subject, "duration:", duration, "questions:", questions, "allowed Users:", allowedUsers,)
+   
 
+    // Generate a random password for the test
+    const password = crypto.randomBytes(8).toString('hex');
+    console.log(testName)
     const newTest = new Test({
         name: testName,
         subject,
         duration,
         questions: questionIds,
         users: allowedUsers,
+        password: password, // Store the test password
         createdBy: req.admin._id,
     });
+    //console.log(newTest)
 
     await newTest.save();
 
+    const testId = newTest._id; // Get the test ID after saving
+
     const successMessage = 'Test created successfully';
     logger.info(successMessage);
-    return res.status(201).json({ message: successMessage, test: newTest });
+    return res.status(201).json({
+        message: successMessage,
+        testId: testId,
+        password: password
+    });
 });
+
 
 // exports.submitTest = asyncErrors(async (req, res, next) => {
 //     const { userId, testId, userResponses, duration } = req.body;
@@ -483,57 +534,131 @@ exports.submitTest = asyncErrors(async (req, res, next) => {
     }
 });
 
+// exports.getUserTestSubmitDetails = asyncErrors(async (req, res, next) => {
+//     const userId = req.params.userId;
+//     const testId = req.params.testId;
+//     const passWord = req.params.passWord;
+//     logger.info(req);
+
+//     if (!isValidObjectId(userId)) {
+//         message = `UserId ${userId} is not valid.`;
+//         logger.error(message);
+//         const response = new ApiResponse(400, null, message);
+//         return res.status(400).json(response);
+//     }
+//     const doesUserExists = await isIdExists(User, userId);
+
+//     logger.info(`doesUser: ${JSON.stringify(doesUserExists)}`);
+//     if (!doesUserExists) {
+//         message = `User with userId ${userId} does not exist.`;
+//         logger.error(message);
+//         const response = new ApiResponse(400, null, message);
+//         return res.status(400).json(response);
+//     }
+
+//     if (!isValidObjectId(userId)) {
+//         message = `testId ${testId} is not valid.`;
+//         logger.error(message);
+//         const response = new ApiResponse(400, null, message);
+//         return res.status(400).json(response);
+//     }
+//     const doesTestExists = await isIdExists(Test, testId);
+
+//     logger.info(`doesUser: ${doesTestExists}`);
+//     if (!doesTestExists) {
+//         message = `Test with testId ${testId} does not exist.`;
+//         logger.error(message);
+//         const response = new ApiResponse(400, null, message);
+//         return res.status(400).json(response);
+//     }
+
+//     try {
+//         const userTestSubmitDetails = await UserTestAttempt.findOne({
+//             user_id: userId,
+//             test_id: testId,
+//         });
+//         logger.info(userTestSubmitDetails);
+//         response = new ApiResponse(200, userTestSubmitDetails);
+//         return res.status(200).json(response);
+//     } catch (err) {
+//         message = `Failed to get the details of the test ${testId} of the user ${userId}. Reason: ${err}`;
+//         logger.error(message);
+//         return next(err);
+//     }
+// });
+
 exports.getUserTestSubmitDetails = asyncErrors(async (req, res, next) => {
-    const userId = req.params.userId;
-    const testId = req.params.testId;
+    const { userId, testId, passWord } = req.params;
     logger.info(req);
 
     if (!isValidObjectId(userId)) {
-        message = `UserId ${userId} is not valid.`;
+        const message = `UserId ${userId} is not valid.`;
         logger.error(message);
         const response = new ApiResponse(400, null, message);
         return res.status(400).json(response);
     }
+
     const doesUserExists = await isIdExists(User, userId);
+    logger.info(`doesUserExists: ${JSON.stringify(doesUserExists)}`);
 
-    logger.info(`doesUser: ${JSON.stringify(doesUserExists)}`);
     if (!doesUserExists) {
-        message = `User with userId ${userId} does not exist.`;
+        const message = `User with userId ${userId} does not exist.`;
         logger.error(message);
         const response = new ApiResponse(400, null, message);
         return res.status(400).json(response);
     }
 
-    if (!isValidObjectId(userId)) {
-        message = `testId ${testId} is not valid.`;
+    if (!isValidObjectId(testId)) {
+        const message = `TestId ${testId} is not valid.`;
         logger.error(message);
         const response = new ApiResponse(400, null, message);
         return res.status(400).json(response);
     }
+
     const doesTestExists = await isIdExists(Test, testId);
+    logger.info(`doesTestExists: ${doesTestExists}`);
 
-    logger.info(`doesUser: ${doesTestExists}`);
     if (!doesTestExists) {
-        message = `Test with testId ${testId} does not exist.`;
+        const message = `Test with testId ${testId} does not exist.`;
         logger.error(message);
         const response = new ApiResponse(400, null, message);
         return res.status(400).json(response);
     }
 
     try {
+        // Validate the test password
+        const test = await Test.findById(testId);
+        if (!test) {
+            const message = `Test with testId ${testId} could not be found.`;
+            logger.error(message);
+            const response = new ApiResponse(400, null, message);
+            return res.status(400).json(response);
+        }
+
+        if (test.password !== passWord) {
+            const message = `Incorrect password for testId ${testId}.`;
+            logger.error(message);
+            const response = new ApiResponse(401, null, message); // Unauthorized status code
+            return res.status(401).json(response);
+        }
+
+        // Fetch the user's test submission details
         const userTestSubmitDetails = await UserTestAttempt.findOne({
             user_id: userId,
             test_id: testId,
         });
+
         logger.info(userTestSubmitDetails);
-        response = new ApiResponse(200, userTestSubmitDetails);
+        const response = new ApiResponse(200, userTestSubmitDetails);
         return res.status(200).json(response);
+
     } catch (err) {
-        message = `Failed to get the details of the test ${testId} of the user ${userId}. Reason: ${err}`;
+        const message = `Failed to get the details of the test ${testId} of the user ${userId}. Reason: ${err.message}`;
         logger.error(message);
         return next(err);
     }
 });
+
 
 exports.isAttempted = asyncErrors(async (req, res) => {
     const { userId, testId } = req.body;
