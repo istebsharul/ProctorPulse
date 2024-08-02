@@ -12,7 +12,7 @@ const Navbar = () => {
   const [userDropdown, setUserDropdown] = useState(false);
   const [username, setUsername] = useState(""); // To store username
   const dropdownRef = useRef(null); // Ref for the dropdown element
-  const currentUser = useSelector(state=>state.auth.user);
+  const currentUser = useSelector(state=>state.auth.admin);
   const dispatch = useDispatch();
   const isLoggedIn = useSelector(state => state.auth.isAuthenticated);
   const navigate = useNavigate();

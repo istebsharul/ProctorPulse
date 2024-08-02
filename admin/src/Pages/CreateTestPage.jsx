@@ -8,9 +8,10 @@ import Modal from '../Components/Modal';
 const CreateTestPage = () => {
   const [page, setPage] = useState(0);
   const navigate = useNavigate();
+  const [testCreated,setTestCreated] = useState(false);
 
   const initialState = {
-    testName: '',
+    name: '',
     subject: '',
     duration: '',
     expiryDate: '',
@@ -58,15 +59,24 @@ const CreateTestPage = () => {
     console.log('Create Test Pressed');
     // e.preventDefault();
     try {
-      console.log(data.testName, data.subject, data.duration, data.questions);
+      console.log(data.name, data.subject, data.duration, data.questions);
       console.log(data);
       await axios.post('api/admin/tests/create', data);
       alert("Test created successfully");
+      setData(initialState);
+      setTestCreated(true);
     } catch (error) {
       alert('Test creation failed');
       console.log(error);
     }
   };
+
+  useEffect(()=>{
+    console.log("Hellllllo");
+    if(testCreated){
+      navigate('/');
+    }
+  })
 
   const titles = ["Test Details", "Questions"];
 
@@ -82,7 +92,7 @@ const CreateTestPage = () => {
     console.log('handle Next Pressed', page);
     if (page === 0) {
       // Validation check for test details page
-      if (!data.testName || !data.subject || !data.duration) {
+      if (!data.name || !data.subject || !data.duration) {
         alert('Please fill out all test details before proceeding.');
         return;
       }

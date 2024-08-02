@@ -10,8 +10,8 @@ const TestDetailsPart = ({ data, setData }) => {
         <input
           className='border-b-2 border-gray-300 focus:border-purple-600 outline-none'
           type="text"
-          value={data.testName}
-          onChange={(e) => setData({ ...data, testName: e.target.value })}
+          value={data.name}
+          onChange={(e) => setData({ ...data, name: e.target.value })}
         />
       </label>
       <label className='flex flex-col'>

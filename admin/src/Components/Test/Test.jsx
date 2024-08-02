@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 function Test({ id, title, description, duration, dueDate }) {
   const [expired, setExpired] = useState(false);
   const navigate = useNavigate();
-//   const user = useSelector((state) => state.auth.user);
+//   const user = useSelector((state) => state.auth.admin);
 
   useEffect(() => {
     // console.log(id);

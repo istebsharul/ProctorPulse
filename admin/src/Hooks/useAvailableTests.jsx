@@ -3,7 +3,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 
 const useAvailableTests = () => {
-    const admin = useSelector(state => state.auth.user);
+    const admin = useSelector(state => state.auth.admin);
     const adminId = admin ? admin._id : null;
     const [availableTests, setAvailableTests] = useState([]);
     const [loading, setLoading] = useState(true);
