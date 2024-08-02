@@ -24,7 +24,7 @@ const QuestionsPart = ({ data, setData }) => {
 
   const handleCorrectOptionChange = (qIndex, value) => {
     const newQuestions = data.questions.map((q, i) =>
-      i === qIndex ? { ...q, correct_answer: value } : q
+      i === qIndex ? { ...q, correct_answer: 1 } : q
     );
     setData({ ...data, questions: newQuestions });
   };

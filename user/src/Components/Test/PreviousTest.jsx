@@ -27,6 +27,7 @@ function PreviousTest({ tests = [] }) { // Ensure tests defaults to an empty arr
             const formattedExpiryDate = test.expiryDate ? new Date(test.expiryDate).toISOString().split('T')[0] : 'N/A';
             return (
               <Test
+                id={test._id}
                 key={index} // Add a unique key for each item
                 title={test.name}
                 description={test.subject}

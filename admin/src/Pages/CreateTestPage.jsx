@@ -64,7 +64,7 @@ const CreateTestPage = () => {
       alert("Test created successfully");
     } catch (error) {
       alert('Test creation failed');
-      console.log(error);
+      console.log(error.response.data.message);
     }
   };
 
