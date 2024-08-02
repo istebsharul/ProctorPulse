@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { FaBars, FaTimes } from "react-icons/fa"; // Importing FontAwesome icons
 import logo from "../../Assets/logo.png";
 import { useSelector } from "react-redux";
-import { logout } from "../../Actions/userActions";
+import { logout } from "../../Actions/adminActions";
 import { useDispatch } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import profilePicture from "../../Assets/profile.png";

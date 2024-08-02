@@ -1,5 +1,5 @@
-import React, { useEffect,useMemo } from 'react';
-import Test from './Test'; // Adjust the import path as needed
+import React, {useMemo } from 'react';
+import Test from '../Test/Test'; // Adjust the import path as needed
 
 function AvailableTest({ tests = [] }) { // Ensure tests defaults to an empty array
   const activeTests = useMemo(() => {
@@ -24,7 +24,8 @@ function AvailableTest({ tests = [] }) { // Ensure tests defaults to an empty ar
             const formattedExpiryDate = test.expiryDate ? new Date(test.expiryDate).toISOString().split('T')[0] : 'N/A';
             return (
               <Test
-                key={index} // Add a unique key for each item
+                key={index} 
+                id={test._id}
                 title={test.name}
                 description={test.subject}
                 duration={test.duration}

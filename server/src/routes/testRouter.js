@@ -30,7 +30,7 @@ router
     .route('/admin/tests/:testId/delete')
     .delete(isAuthenticatedAdmin, deleteTest);
 router.route('/admin/tests/create').post(isAuthenticatedAdmin, createTest);
-router.route('/admin/test/:testId/responses').get(getTestResponses);
+router.route('/ranking/test/:testId').get(getTestResponses);
 router.route('/admin/test/:adminId').get(getAvailableTests);
 
 module.exports = router;

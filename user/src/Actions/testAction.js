@@ -52,13 +52,25 @@ export const get_user_test_response = (userId, testId) => {
   };
 };
 
-export const checkTestAttempted = ({userId, testId}) => async (dispatch) => {
+export const checkTestAttempted = ({ userId, testId }) => async (dispatch) => {
   try {
-      console.log(testId,userId);
-      const response = await axios.post('/api/user/test/attempted', { userId, testId });
-      return response.data.attempted;
+    console.log(testId, userId);
+    const response = await axios.post('/api/user/test/attempted', { userId, testId });
+    return response.data.attempted;
   } catch (error) {
-      console.error('Error checking test attempt:', error);
-      throw error;
+    console.error('Error checking test attempt:', error);
+    throw error;
+  }
+};
+
+export const testRanking = ({ testId }) => async (dispatch) =>{
+  try {
+    const response = await axios.post(`/api/test/${testId}/rankings`);
+    console.log(response);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching Ranking: ",error.message);
+    return error.message;
+    // throw error;
   }
 };

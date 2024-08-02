@@ -13,10 +13,12 @@ import LoginPage from "./Pages/LoginPage";
 import SignupPage from "./Pages/SignupPage";
 import QuizPage from './Pages/QuizPage';
 import ForgotPasswordPage from "./Pages/ForgotPasswordPage";
-import Profile from "./Pages/Profile";
+import ProfilePage from "./Pages/ProfilePage";
 import TestPage from "./Pages/TestPage";
 import ResetPasswordPage from './Pages/ResetPasswordPage';
 import ResultPage from './Pages/ResultPage';
+import EditProfilePage from './Pages/EditProfilePage';
+import Ranking from './Pages/Ranking';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -26,19 +28,23 @@ root.render(
         <div className='bg-white lg:h-19 md:h-12'>
           <Navbar />
           <App />
+          <div className='pt-12'>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
             <Route path="/password/reset/:token" element={<ResetPasswordPage/>}/>
-            <Route path="/quiz" element={<QuizPage />} />
             <Route path="/result" element={<ResultPage />} />
+            <Route path="/ranking/test/:test_id" element={<Ranking/>}/>
             <Route element={<ProtectedRoute />}>
-              <Route path="/profile" element={<Profile />} />
+            <Route path="/quiz" element={<QuizPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/profile/edit" element={<EditProfilePage/>}/>
               <Route path="/test" element={<TestPage />} />
             </Route>
           </Routes>
+          </div>
         </div>
       </Router>
     </Provider>

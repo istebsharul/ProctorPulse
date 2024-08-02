@@ -8,6 +8,14 @@ const userTestAttemptSchema = new Schema(
             ref: 'User',
             required: true,
         },
+        user_name:{
+            type:String,
+            required:true,
+        },
+        user_imageUrl:{
+            type:String,
+            required:false,
+        },
         test_id: {
             type: Schema.Types.ObjectId,
             ref: 'Test',

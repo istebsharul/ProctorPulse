@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import Test from './Test'; // Adjust the import path as needed
+import Test from '../Test/Test'; // Adjust the import path as needed
 
 function PreviousTest({ tests = [] }) { // Ensure tests defaults to an empty array
   useEffect(() => {

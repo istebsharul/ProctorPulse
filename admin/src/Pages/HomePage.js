@@ -1,8 +1,8 @@
 import React from "react";
 import CreateTestButton from "../Components/User/CreateTestButton";
-import AvailableTest from "../Components/User/AvailableTest";
+import AvailableTest from "../Components/Test/AvailableTest";
 import useAvailableTests from "../Hooks/useAvailableTests";
-import PreviousTest from "../Components/User/PreviousTest";
+import PreviousTest from "../Components/Test/PreviousTest";
 
 function HomePage() {
   const { availableTests, loading, error } = useAvailableTests();
