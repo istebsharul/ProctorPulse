@@ -9,7 +9,7 @@ function Ranking() {
     const [rankData, setRankData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const curr_user = useSelector((state) => state.auth.user);
+    const curr_user = useSelector((state) => state.auth.admin);
 
     useEffect(() => {
         const fetchRanking = async () => {

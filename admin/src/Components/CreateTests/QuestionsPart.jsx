@@ -23,11 +23,17 @@ const QuestionsPart = ({ data, setData }) => {
   };
 
   const handleCorrectOptionChange = (qIndex, value) => {
-    const newQuestions = data.questions.map((q, i) =>
-      i === qIndex ? { ...q, correct_answer: value } : q
-    );
+    console.log(qIndex);
+    const newQuestions = data.questions.map((q, i) => {
+      if (i === qIndex) {
+        console.log(q); // Logging the question being updated
+        return { ...q, correct_answer: value };
+      }
+      return q;
+    });
     setData({ ...data, questions: newQuestions });
   };
+  
 
   const addQuestion = (e) => {
     e.preventDefault();
@@ -72,9 +78,9 @@ const QuestionsPart = ({ data, setData }) => {
               />
               <input
                 type="radio"
-                name={`correct_answer-${index}`}
-                checked={q.correct_answer === opt}
-                onChange={() => handleCorrectOptionChange(index, opt)}
+                // name={`correct_answer-${index}`}
+                checked={q.correct_answer === optIndex+1}
+                onChange={() => handleCorrectOptionChange(index, optIndex+1)}
               />
             </div>
           ))}

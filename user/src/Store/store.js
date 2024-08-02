@@ -6,7 +6,7 @@ import storage from 'redux-persist/lib/storage';
 import { persistReducer,persistStore } from 'redux-persist';
 
 const persistConfig = {
-  key:'root',
+  key:'user',
   storage,
 };
 

@@ -316,7 +316,7 @@ exports.createTest = asyncErrors(async (req, res, next) => {
 
     // Generate a random password for the test
     const password = crypto.randomBytes(8).toString('hex');
-    console.log(testName)
+    console.log("Test Name: ",testName)
     const newTest = new Test({
         name: testName,
         subject,
