@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { FaChartBar, FaTrash } from 'react-icons/fa';
-// import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-// import {toast} from 'react-hot-toast';
+import {toast} from 'react-hot-toast';
+import axios from 'axios';
 
 function Test({ id, title, description, duration, dueDate }) {
   const [expired, setExpired] = useState(false);
   const navigate = useNavigate();
+  
 //   const user = useSelector((state) => state.auth.admin);
 
   useEffect(() => {
@@ -17,9 +18,16 @@ function Test({ id, title, description, duration, dueDate }) {
     }
   }, [dueDate]);
 
-  const handleDeleteTest = (e) => {
-    e.stopPropagation();
-    console.log("Delete Clicked!!");
+  const handleDeleteTest = async(e) => {
+    // e.stopPropagation();
+    try {
+      const response = await axios.delete(`api/admin/tests/${id}/delete`);
+      console.log(response.data.message);
+      toast.success("Test Deleted Successfully!");
+    } catch (error) {
+      console.error(error.response.data.message);
+      toast.error("Error Deleting Test!");
+    }
   }
 
   const handleRanking = (e) => {

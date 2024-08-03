@@ -229,7 +229,7 @@ exports.getTestDetails = asyncErrors(async (req, res, next) => {
 
 exports.deleteTest = asyncErrors(async (req, res, next) => {
     const testId = req.params.testId;
-
+    console.log()
     const test = await Test.findById(testId);
 
     if (!test) {
