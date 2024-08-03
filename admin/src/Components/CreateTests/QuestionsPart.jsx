@@ -1,4 +1,5 @@
 import React from 'react';
+import { MdDelete } from 'react-icons/md';
 
 const QuestionsPart = ({ data, setData }) => {
   const handleQuestionChange = (index, field, value) => {
@@ -12,11 +13,11 @@ const QuestionsPart = ({ data, setData }) => {
     const newQuestions = data.questions.map((q, i) =>
       i === qIndex
         ? {
-            ...q,
-            options: q.options.map((opt, j) =>
-              j === optionIndex ? value : opt
-            ),
-          }
+          ...q,
+          options: q.options.map((opt, j) =>
+            j === optionIndex ? value : opt
+          ),
+        }
         : q
     );
     setData({ ...data, questions: newQuestions });
@@ -33,7 +34,7 @@ const QuestionsPart = ({ data, setData }) => {
     });
     setData({ ...data, questions: newQuestions });
   };
-  
+
 
   const addQuestion = (e) => {
     e.preventDefault();
@@ -54,47 +55,49 @@ const QuestionsPart = ({ data, setData }) => {
   return (
     <div className='flex flex-col gap-4'>
       {data.questions.map((q, index) => (
-        <div key={index} className='flex flex-col gap-2 border-b border-gray-300 pb-4'>
-          <label>
-            Question:
-            <input
-              className='w-full border-b-2 border-gray-300 focus:border-red-600 outline-none'
-              type="text"
-              value={q.title}
-              onChange={(e) =>
-                handleQuestionChange(index, 'title', e.target.value)
-              }
-            />
-          </label>
-          {q.options.map((opt, optIndex) => (
-            <div key={optIndex} className='flex justify-center items-center gap-2'>
-              <input
-                className='border-b-2 border-gray-300 focus:border-red-600 outline-none'
-                type="text"
-                value={opt}
-                onChange={(e) =>
-                  handleOptionChange(index, optIndex, e.target.value)
-                }
-              />
-              <input
-                type="radio"
-                // name={`correct_answer-${index}`}
-                checked={q.correct_answer === optIndex+1}
-                onChange={() => handleCorrectOptionChange(index, optIndex+1)}
-              />
-            </div>
-          ))}
+        <div key={index} className='bg-purple-900 p-8 rounded-xl flex flex-col items-end gap-2 border-b border-gray-300 pb-4'>
+          <textarea
+            className='w-full p-2 rounded-lg outline-none'
+            type="text"
+            rows="3"
+            placeholder='Write your question here'
+            value={q.title}
+            onChange={(e) =>
+              handleQuestionChange(index, 'title', e.target.value)
+            }
+          />
+          <div className='flex flex-wrap'>
+            {q.options.map((opt, optIndex) => (
+              <div key={optIndex} className='md:w-1/2 w-full py-2 flex justify-center items-center gap-2'>
+                <input
+                  type="radio"
+                  // name={`correct_answer-${index}`}
+                  checked={q.correct_answer === optIndex + 1}
+                  onChange={() => handleCorrectOptionChange(index, optIndex + 1)}
+                />
+                <input
+                  className='w-full border-1 rounded-lg p-2 focus:border-red-600 outline-none'
+                  type="text"
+                  value={opt}
+                  placeholder={`Options ${optIndex+1}`}
+                  onChange={(e) =>
+                    handleOptionChange(index, optIndex, e.target.value)
+                  }
+                />
+              </div>
+            ))}
+          </div>
           <button
             onClick={() => deleteQuestion(index)}
-            className='mt-2 w-full bg-red-600 py-1 px-2 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2'
+            className='mt-2 w-fit bg-white py-1 px-3 flex justify-center items-center text-red-500 rounded-md hover:bg-red-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2'
           >
-            Delete Question
+            <MdDelete />
           </button>
         </div>
       ))}
       <button
         onClick={addQuestion}
-        className='mt-4 w-full bg-purple-500 py-2 px-4 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
+        className='mt-4 w-full bg-yellow-500 py-2 px-4 text-black rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
       >
         Add Question
       </button>
