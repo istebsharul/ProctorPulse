@@ -15,18 +15,17 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const result = dispatch(login(email, password));
-      if (result && result.payload && result.payload.success) {
-        console.log("after navigate");
-        navigate('/');
-        console.log("after navigate");
-      } else {
-        console.error("Login failed:", result.payload.message);
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-    }
+    dispatch(login(email,password))
+      .then((result)=>{
+        console.log(result);
+        if(result && result.isLoggedIn){
+          console.log("Result is LoggedIn", result.isLoggedIn);
+          navigate('/');
+        }
+      })
+      .catch((error)=>{
+        console.error("Login Error",error);
+      })
     setEmail("");
     setPassword("");
   };
