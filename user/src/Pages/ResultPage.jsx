@@ -37,7 +37,11 @@ const ResultPage = () => {
   const percentage = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
 
   const handleSeeMoreDetails = () => {
-    navigate('/');
+    if (testId) {
+      navigate(`/ranking/test/${testId}/analysis`);
+    } else {
+      console.error('Test ID is missing');
+    }
   };
 
   return (

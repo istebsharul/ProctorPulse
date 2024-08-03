@@ -1,25 +1,28 @@
-import {configureStore} from '@reduxjs/toolkit'
-import {thunk} from 'redux-thunk';
-import authReducer from "../Reducer/userReducer";
-import testReducer from "../Reducer/testReducer";
+import { configureStore } from '@reduxjs/toolkit';
+import { thunk } from 'redux-thunk';
+import authReducer from '../Reducer/userReducer';
+import testReducer from '../Reducer/testReducer';
 import storage from 'redux-persist/lib/storage';
-import { persistReducer,persistStore } from 'redux-persist';
+import { persistReducer, persistStore } from 'redux-persist';
 
 const persistConfig = {
-  key:'user',
+  key: 'user',
   storage,
 };
 
-const persistedReducer = persistReducer(persistConfig,authReducer);
+const persistedReducer = persistReducer(persistConfig, authReducer);
 
 const store = configureStore({
   reducer: {
-    auth: persistedReducer, // Assuming authReducer manages authentication state
-    test: testReducer, // Assuming testReducer manages test-related state
-    // Add more reducers here if needed
+    auth: persistedReducer, // Auth state persistence
+    test: testReducer, // Test state management
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
-  // Add other store configurations if needed
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'], // Ignore specific persist actions
+      },
+    }).concat(thunk), // Ensure thunk is correctly concatenated
 });
 
 export const persistor = persistStore(store);

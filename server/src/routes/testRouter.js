@@ -13,6 +13,7 @@ const {
     isAttempted
 } = require('../controllers/testController');
 const { isAuthenticatedAdmin } = require('../middleware/authentication');
+const { getQuestionDetails } = require('../controllers/questionController')
 
 const router = express.Router();
 
@@ -24,6 +25,7 @@ router.route('/user/:userId/test/:testId/submit').post(submitTest);
 router.route('/user/:userId/test/:testId/responses').get(testUserResponses);
 router.route('/user/:userId/test/:testId/details').get(getUserTestSubmitDetails);
 router.route('/user/test/attempted').post(isAttempted);
+router.route('/questions/:questionId').get(getQuestionDetails);
 
 //admin routes
 router
