@@ -71,6 +71,7 @@ const QuestionsPart = ({ data, setData }) => {
               <div key={optIndex} className='md:w-1/2 w-full py-2 flex justify-center items-center gap-2'>
                 <input
                   type="radio"
+                  className='md:mx-2'
                   // name={`correct_answer-${index}`}
                   checked={q.correct_answer === optIndex + 1}
                   onChange={() => handleCorrectOptionChange(index, optIndex + 1)}

@@ -25,7 +25,7 @@ root.render(
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <Router>
-          <div className='bg-purple-200 lg:h-19 md:h-12'>
+          <div className='bg-white lg:h-19 md:h-12'>
             <Navbar />
             <App />
             <Routes>
