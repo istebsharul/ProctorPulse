@@ -234,7 +234,7 @@ exports.getTestDetails = asyncErrors(async (req, res, next) => {
 
 exports.deleteTest = asyncErrors(async (req, res, next) => {
     const testId = req.params.testId;
-
+    console.log()
     const test = await Test.findById(testId);
 
     if (!test) {
@@ -321,6 +321,7 @@ exports.createTest = asyncErrors(async (req, res, next) => {
 
     // Generate a random password for the test
     const password = crypto.randomBytes(8).toString('hex');
+    // console.log(password.type());
     console.log("Test Name: ", testName)
     const newTest = new Test({
         name: testName,
@@ -336,8 +337,8 @@ exports.createTest = asyncErrors(async (req, res, next) => {
     await newTest.save();
 
     const testId = newTest._id; // Get the test ID after saving
-
-    const successMessage = 'Test created successfully';
+    
+    const successMessage = 'You have Successfully Created an Assessment';
     logger.info(successMessage);
     return res.status(201).json({
         message: successMessage,
@@ -382,7 +383,6 @@ exports.getTestResponses = asyncErrors(async (req, res, next) => {
         next(error);
     }
 });
-
 
 exports.testUserResponses = asyncErrors(async (req, res, next) => {
     const { testId, userId } = req.params;
@@ -532,7 +532,6 @@ exports.submitTest = asyncErrors(async (req, res, next) => {
     }
 });
 
-
 exports.getUserTestSubmitDetails = asyncErrors(async (req, res, next) => {
     const { userId, testId, passWord } = req.params;
     logger.info(req);
@@ -604,7 +603,6 @@ exports.getUserTestSubmitDetails = asyncErrors(async (req, res, next) => {
         return next(err);
     }
 });
-
 
 exports.isAttempted = asyncErrors(async (req, res) => {
     const { userId, testId } = req.body;

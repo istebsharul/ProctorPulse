@@ -16,7 +16,7 @@ function HomePage() {
   }
 
   return (
-    <div>
+    <div className="bg-white">
       <CreateTestButton />
       <h1 className="text-xl text-center py-10">Assigned Test</h1>
       {!loading && !error && <AvailableTest tests={availableTests.data} />}

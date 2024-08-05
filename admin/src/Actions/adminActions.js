@@ -41,6 +41,7 @@ export const login = (email, password) => {
       // setCookie("jwt", token, 1); /// Set cookie expiry for 1 day
       // console.log(token);
       dispatch({ type: LOGIN_SUCCESS, payload: response.data });
+      return {isLoggedIn:true};
     } catch (error) {
       console.error(error.response.data.message);
       toast.error(error.response.data.message);
