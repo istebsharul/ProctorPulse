@@ -38,6 +38,10 @@ const testSchema = new Schema(
                 ref: 'User',
             },
         ],
+        password:{
+            type: String,
+            required: true
+        },
         createdBy: {
             type: Schema.Types.ObjectId,
             ref: 'Admin',

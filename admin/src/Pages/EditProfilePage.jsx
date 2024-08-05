@@ -8,7 +8,7 @@ import profilepicture from '../Assets/profile.png';
 const EditProfilePage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const currentUser = useSelector(state => state.auth.user);
+    const currentUser = useSelector(state => state.auth.admin);
     const [initialFormData, setInitialFormData] = useState({});
     const [formData, setFormData] = useState({
         name: '',

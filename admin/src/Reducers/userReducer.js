@@ -12,7 +12,7 @@ import {
 } from '../Constants/userConstant';
 
 const initialState = {
-    user:null,
+    admin:null,
     isAuthenticated:false,
     error:null
 };
@@ -24,7 +24,7 @@ const authReducer = (state = initialState, action) => {
         case SIGNUP_SUCCESS:
             return {
                 ...state,
-                user: action.payload,
+                admin: action.payload,
                 error: null,
                 isAuthenticated: true,
             };
@@ -34,21 +34,21 @@ const authReducer = (state = initialState, action) => {
         case FORGOT_PASSWORD_FAILURE:
             return {
                 ...state,
-                user: null,
+                admin: null,
                 error: action.payload,
                 isAuthenticated: false
             };
         case LOGOUT_FAILURE:
             return {
                 ...state,
-                user: null,
+                admin: null,
                 error: action.payload,
                 isAuthenticated: false
             };
         case LOGOUT_SUCCESS:
             return {
                 ...state,
-                user: null,
+                admin: null,
                 error: null,
                 isAuthenticated: false,
             };
@@ -56,9 +56,9 @@ const authReducer = (state = initialState, action) => {
             return {
                 ...state,
                 // You might want to handle the success scenario differently,
-                // such as displaying a message to the user.
-                // For example, you could set user to null and error to a success message.
-                user: null,
+                // such as displaying a message to the admin.
+                // For example, you could set admin to null and error to a success message.
+                admin: null,
                 error: action.payload,
             };
         default:

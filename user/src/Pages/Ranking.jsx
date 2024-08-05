@@ -34,9 +34,16 @@ function Ranking() {
     }, [test_id]);
 
     // Find the current user in the rank data
-    const currentUserIndex = rankData.findIndex(user => user.user_id._id === curr_user._id);
+    // const currentUserIndex = rankData.findIndex(user => user.user_id._id === curr_user._id);
+    // const current_user = currentUserIndex !== -1 ? rankData[currentUserIndex] : null;
+    // const current_user_rank = currentUserIndex !== -1 ? currentUserIndex + 1 : null;
+
+    const currentUserIndex = curr_user && curr_user._id 
+        ? rankData.findIndex(user => user.user_id && user.user_id._id === curr_user._id)
+        : -1;
     const current_user = currentUserIndex !== -1 ? rankData[currentUserIndex] : null;
     const current_user_rank = currentUserIndex !== -1 ? currentUserIndex + 1 : null;
+
 
     return (
         <div className='flex flex-col justify-center items-center mt-20'>
@@ -44,7 +51,7 @@ function Ranking() {
             <div className='w-3/5 bg-purple-100 rounded-xl p-10 space-y-2'>
                 <div>
                     { current_user &&
-                        <Rank user={current_user} rank={current_user_rank} />
+                        <Rank user={current_user} testId={test_id} rank={current_user_rank} />
                     }
                 </div>
                 {loading && <div>Loading...</div>}

@@ -3,7 +3,7 @@ import profile from "../Assets/profile.png";
 import { useSelector } from 'react-redux';
 
 function Rank({ rank, user }) {
-    const curr_user = useSelector((state) => state.auth.user);
+    const curr_user = useSelector((state) => state.auth.admin);
     const isLoggedInUser = curr_user._id === user.user_id._id;
 
     // useEffect(() => {

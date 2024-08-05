@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const ProfilePage = () => {
-    const currentUser = useSelector(state => state.auth.user);
+    const currentUser = useSelector(state => state.auth.admin);
     const { availableTests, loading, error } = useAvailableTests();
     const navigate = useNavigate();
 

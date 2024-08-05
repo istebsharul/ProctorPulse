@@ -10,7 +10,7 @@ function CreateTestButton() {
   };
 
   return (
-    <div className="w-full h-80 pt-20 flex justify-center">
+    <div className="w-full pt-40 flex justify-center">
       <button
         className="md:w-1/5 bg-purple-200 hover:bg-purple-100 text-black px-3 py-3 font-Poppins text-xl rounded-lg m-auto shadow-inner-md flex justify-center items-center"
         onClick={redirectToCreateTest}

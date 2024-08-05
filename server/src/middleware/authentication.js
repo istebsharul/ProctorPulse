@@ -34,8 +34,10 @@ exports.isAuthenticatedAdmin = AsyncErrors(async (req, res, next) => {
     }
 
     const decodeData = jwt.verify(token, process.env.JWT_SECRET);
+    //console.log(decodeData.id)
 
     req.admin = await Admin.findById(decodeData.id);
+   // console.log(req.admin)
 
     // console.log('req.admin', req.admin);
 

@@ -29,12 +29,13 @@ const cloudinary = require('../config/cloudinary.js');
 
 //Register a User
 exports.registerUser = asyncErrors(async (req, res, next) => {
-    const { name, email, password } = req.body;
-    logger.info(`Name: ${name}\n Email: ${email}\n Password: ${password}`);
+    const { name, email, password,organisation } = req.body;
+    logger.info(`Name: ${name}\n Email: ${email}\n Password: ${password}\n Organisation: ${organisation}`);
     const user = await User.create({
         name,
         email,
         password,
+        organisation
     });
     logger.info('Hello');
     logger.info(`User: ${user}`);

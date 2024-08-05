@@ -32,7 +32,7 @@ export const get_test_details = (userId, testId) => {
 
       dispatch({ type: FETCH_TEST_DETAILS_SUCCESS, payload: questions });
     } catch (error) {
-      dispatch({ type: FETCH_TEST_DETAILS_FAILURE, payload: error.message });
+      dispatch({ type: FETCH_TEST_DETAILS_FAILURE, payload: error.message});
     }
   };
 };
