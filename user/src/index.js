@@ -36,7 +36,7 @@ root.render(
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
             <Route path="/password/reset/:token" element={<ResetPasswordPage/>}/>
-            <Route path="/result" element={<ResultPage />} />
+            <Route path="/result/test/:test_id" element={<ResultPage />} />
             <Route path="/ranking/test/:test_id" element={<Ranking/>}/>
             <Route path="/ranking/test/:test_id/analysis" element={<ResultsPageAnalysis/>}/>
             <Route element={<ProtectedRoute />}>

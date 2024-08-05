@@ -40,7 +40,7 @@ const QuizPage = () => {
             })
             .catch(error => {
                 console.info(`userId: ${userId} and testId: ${testId}`);
-                console.error('Error fetching questions:', error);
+                console.error('Error fetching questions:', error.response.data.message);
                 setLoading(false);
             });
     }, [dispatch, userId, testId]);
@@ -123,7 +123,7 @@ const QuizPage = () => {
             console.log('Test submitted successfully:', response.data);
             // exitFullscreen(); // Exit fullscreen when test ends
             // if(showEndDisclaimer){
-            navigate(`/result?testId=${testId}`);
+            navigate(`/result/test/${testId}`);
             // }
         } catch (error) {
             console.error('Error submitting test:', error);
@@ -161,7 +161,7 @@ const QuizPage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-purple-100 flex flex-col justify-center items-start pt-12">
+        <div className="min-h-screen bg-purple-100 flex flex-col justify-center items-start">
             <header className="w-full bg-purple-900 text-white flex items-center justify-start">
                 <div className='w-fit ml-2'>
                     <img className='md:w-[2.7rem]' src={logo} alt="logo" />

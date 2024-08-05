@@ -1,24 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate,useLocation } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { get_user_test_response } from '../Actions/testAction';
 import { SlArrowRight } from "react-icons/sl";
+
 
 const ResultPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const auth = useSelector(state => state.auth);
   const userId = auth.user ? auth.user._id : null;
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const testId = queryParams.get('testId');
+  // const location = useLocation();
+  // const queryParams = new URLSearchParams(location.search);
+  const { test_id } = useParams();
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [totalQuestions, setTotalQuestions] = useState(0);
+
+
+  useEffect(()=>{
+    console.log(test_id);
+  })
 
   useEffect(() => {
     const fetchTestDetails = async () => {
       try {
-        const payload = await dispatch(get_user_test_response(userId, testId));
+        const payload = await dispatch(get_user_test_response(userId, test_id));
         const { total_score, attempted_questions, skipped_questions } = payload;
         const totalQuestions = attempted_questions + skipped_questions;
         setCorrectAnswers(total_score);
@@ -29,16 +35,16 @@ const ResultPage = () => {
       }
     };
 
-    if (userId && testId) {
+    if (userId && test_id) {
       fetchTestDetails();
     }
-  }, [dispatch, userId, testId]);
+  }, [dispatch, userId, test_id]);
 
   const percentage = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
 
   const handleSeeMoreDetails = () => {
-    if (testId) {
-      navigate(`/ranking/test/${testId}/analysis`);
+    if (test_id) {
+      navigate(`/ranking/test/${test_id}/analysis`);
     } else {
       console.error('Test ID is missing');
     }

@@ -82,7 +82,7 @@ export const signup = (name, email, password, organisation) => {
             dispatch({ type: SIGNUP_SUCCESS, payload: response.data });
         } catch (error) {
             toast.error('Signup Failed: ' + error.message);
-            dispatch({ type: SIGNUP_FAILURE, payload: error.message });
+            dispatch({ type: SIGNUP_FAILURE, payload: error.message.data });
         }
     };
 };

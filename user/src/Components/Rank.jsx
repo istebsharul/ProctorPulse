@@ -1,19 +1,23 @@
 import React from 'react'
 import profile from "../Assets/profile.png";
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { TbListDetails } from 'react-icons/tb';
 
-function Rank({ rank, user }) {
+function Rank({ rank, testId, user }) {
     const curr_user = useSelector((state) => state.auth.user);
     const isLoggedInUser = curr_user._id === user.user_id._id;
+    const navigate = useNavigate();
 
-    // useEffect(() => {
-    //     // console.log("Hiiiiiiiii");
-    //     // console.log("User from Ranks",user.name);
-    //     console.log(user);
-    // })
+    const handleTestDetails = () => {
+        if (testId) {
+            navigate(`/ranking/test/${testId}/analysis`)
+        }
+    }
 
     return (
-        <div className={`${isLoggedInUser ? 'bg-purple-900 text-white' : 'bg-purple-300'} backdrop-blur-lg shadow-sm hover:shadow-md flex justify-start items-center p-4 rounded-md`}>
+        <div
+            className={`${isLoggedInUser ? 'bg-purple-900 text-white' : 'bg-purple-300'} backdrop-blur-lg shadow-sm hover:shadow-md flex justify-start items-center p-4 rounded-md`}>
             <div className='px-4'>{rank}</div>
             <div className='w-full flex justify-between items-center'>
                 <div className='flex justify-center items-center'>
@@ -25,10 +29,18 @@ function Rank({ rank, user }) {
                         <div></div>
                     )}
                 </div>
-                <div>{user.total_score}</div>
+                <div className='flex justify-center items-center space-x-3'>
+                    <div className=''>Score: {user.total_score}</div>
+                    {   testId &&
+                        <div 
+                        onClick={handleTestDetails}
+                        className='bg-white text-black p-1 rounded-md hover:bg-purple-100 hover:scale-125 transition-all duration-2000'
+                    ><TbListDetails /></div>
+                    }
+                </div>
             </div>
-            </div>
-            )
+        </div>
+    )
 }
 
-            export default Rank
+export default Rank

@@ -13,7 +13,7 @@ const {
     isAttempted
 } = require('../controllers/testController');
 const { isAuthenticatedAdmin } = require('../middleware/authentication');
-const { getQuestionDetails } = require('../controllers/questionController')
+const { getQuestionDetails } = require('../controllers/questionController');
 
 const router = express.Router();
 
