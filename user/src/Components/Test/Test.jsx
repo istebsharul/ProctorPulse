@@ -3,7 +3,8 @@ import { FaChartBar, FaTrash } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { checkTestAttempted } from '../../Actions/testAction';
-import {toast} from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
+import { BiEdit } from "react-icons/bi";
 
 function Test({ id, title, description, duration, dueDate }) {
   const [expired, setExpired] = useState(false);
@@ -55,17 +56,18 @@ function Test({ id, title, description, duration, dueDate }) {
           <h1 className='text-2xl'>{title}</h1>
           <p className='text-xs'>{description}</p>
         </div>
-        <div className='flex flex-col space-y-2'>
+        <div className='flex flex-col space-y-1'>
           <div
-            className='bg-white text-black hover:bg-purple-200 hover:shadow-xl hover:scale-105 p-1 rounded-md'
+            className='w-7 h-7 flex justify-center items-center bg-white text-black hover:bg-purple-200 hover:shadow-xl hover:scale-105 p-1 rounded-md'
             onClick={handleRanking}
           >
-            <FaChartBar />
+            <FaChartBar className='w-full h-full' />
           </div>
           <div
-            className='bg-white text-black hover:bg-purple-200 hover:shadow-xl hover:scale-105 p-1 rounded-md'
+            className='w-7 h-7 flex justify-center items-center bg-white text-black hover:bg-purple-200 hover:shadow-xl hover:scale-105 p-1 rounded-md'
             onClick={handleDeleteTest}
-          ><FaTrash /></div>
+          ><FaTrash className='w-full h-full' />
+          </div>
         </div>
       </div>
       <div className='w-full flex justify-between items-center space-x-2'>

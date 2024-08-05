@@ -12,6 +12,7 @@ const ErrorHandler = require('../utils/errorHandlers');
 const calculateScore = require('../services/evaluation');
 const UserAttempt = require('../models/userAttemptResponse.model');
 const Admin = require('../models/admin.models');
+const AVLTree = require('../utils/AVLTree');
 
 /**
  * Fetch the test history of the user with given userId.
@@ -78,7 +79,7 @@ exports.getTestHistory = asyncErrors(async (req, res, next) => {
  * @returns {Promise<void>} - A Promise that resolves after the user is registered.
  */
 
-// Get Available Test -> Fetching all the Test assigned to a particular User
+// Get Available Test -> Fetching all the Test assigned by a particular admin
 exports.getAvailableTests = asyncErrors(async (req, res, next) => {
     const adminId = req.params.adminId;
     logger.info(`RequestBody: ${adminId}`);
@@ -146,32 +147,36 @@ exports.getAvailableTestsUser = asyncErrors(async (req, res, next) => {
     if (!isValidObjectId(userId)) {
         const message = `UserId ${userId} is not valid.`;
         logger.error(message);
-        const response = new ApiResponse(400, null, message);
-        return res.status(400).json(response);
+        return res.status(400).json(new ApiResponse(400, null, message));
     }
 
     const doesUserExists = await isIdExists(User, userId);
-
     logger.info(`doesUser: ${doesUserExists}`);
+
     if (!doesUserExists) {
         const message = `User with userId ${userId} does not exist.`;
         logger.error(message);
-        const response = new ApiResponse(400, null, message);
-        return res.status(400).json(response);
+        return res.status(404).json(new ApiResponse(404, null, message));
     }
 
     try {
-        const availableTests = await Test.find({ users: userId }); // Optional: Populate questions with their titles
+        const availableTests = await Test.find({ users: userId });
         logger.info('Available tests fetched successfully.');
 
-        const response = new ApiResponse(200, availableTests);
-        return res.status(200).json(response);
+        if (!availableTests || availableTests.length === 0) {
+            const message = `No available tests found for User with UserId ${userId}.`;
+            logger.info(message);
+            return res.status(404).json(new ApiResponse(404, null, message));
+        }
+
+        return res.status(200).json(new ApiResponse(200, availableTests));
     } catch (err) {
         const message = `Failed to fetch available tests for User with UserId ${userId}. Reason: ${err.message}`;
         logger.error(message);
         return next(err);
     }
 });
+
 
 // Get Test Details -> Fetching all the question of the Test
 exports.getTestDetails = asyncErrors(async (req, res, next) => {
@@ -296,7 +301,7 @@ const crypto = require('crypto');
 exports.createTest = asyncErrors(async (req, res, next) => {
     const { name, subject, duration, questions, allowedUsers } = req.body;
     const testName = name
-   //console.log(req.body)
+    //console.log(req.body)
 
     const questionIds = [];
 
@@ -312,12 +317,12 @@ exports.createTest = asyncErrors(async (req, res, next) => {
             return next(new Error(errorMessage));
         }
     }
-   
+
 
     // Generate a random password for the test
     const password = crypto.randomBytes(8).toString('hex');
     // console.log(password.type());
-    console.log("Test Name: ",testName)
+    console.log("Test Name: ", testName)
     const newTest = new Test({
         name: testName,
         subject,
@@ -409,7 +414,7 @@ exports.testUserResponses = asyncErrors(async (req, res, next) => {
 exports.submitTest = asyncErrors(async (req, res, next) => {
     const userId = req.params.userId;
     const testId = req.params.testId;
-    const { answers,user_name, user_imageUrl } = req.body;
+    const { answers, user_name, user_imageUrl } = req.body;
     console.log(answers);
 
     // Validate request body schema
@@ -607,10 +612,10 @@ exports.isAttempted = asyncErrors(async (req, res) => {
 
         if (userAttempted) {
             logger.info("User Already Attempted Test!");
-            return res.status(200).json({attempted:true});
+            return res.status(200).json({ attempted: true });
         }
 
-        return res.status(200).json({attempted:false});
+        return res.status(200).json({ attempted: false });
     } catch (error) {
         logger.error(error.message);
         return next(error);

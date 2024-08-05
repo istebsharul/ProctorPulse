@@ -3,12 +3,12 @@ import { FaChartBar, FaTrash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import {toast} from 'react-hot-toast';
 import axios from 'axios';
+import {BiEdit} from 'react-icons/bi';
 
 function Test({ id, title, description, duration, dueDate }) {
   const [expired, setExpired] = useState(false);
   const navigate = useNavigate();
   
-//   const user = useSelector((state) => state.auth.admin);
 
   useEffect(() => {
     // console.log(id);
@@ -44,17 +44,23 @@ function Test({ id, title, description, duration, dueDate }) {
           <h1 className='text-2xl'>{title}</h1>
           <p className='text-xs'>{description}</p>
         </div>
-        <div className='flex flex-col space-y-2'>
-          <div
-            className='bg-white text-black hover:bg-purple-200 hover:shadow-xl hover:scale-105 p-1 rounded-md'
-            onClick={handleRanking}
+        <div className='flex flex-col space-y-1'>
+        <div
+            className='w-7 h-7 flex justify-center items-center bg-white text-black hover:bg-purple-200 font-bold hover:shadow-xl hover:scale-105 p-1 rounded-md'
           >
-            <FaChartBar />
+            <BiEdit className='w-full h-full' />
           </div>
           <div
-            className='bg-white text-black hover:bg-purple-200 hover:shadow-xl hover:scale-105 p-1 rounded-md'
+            className='w-7 h-7 flex justify-center items-center bg-white text-black hover:bg-purple-200 hover:shadow-xl hover:scale-105 p-1 rounded-md'
+            onClick={handleRanking}
+          >
+            <FaChartBar className='w-full h-full' />
+          </div>
+          <div
+            className='w-7 h-7 flex justify-center items-center bg-white text-black hover:bg-purple-200 hover:shadow-xl hover:scale-105 p-1 rounded-md'
             onClick={handleDeleteTest}
-          ><FaTrash /></div>
+          ><FaTrash className='w-full h-full' />
+          </div>
         </div>
       </div>
       <div className='w-full flex justify-between items-center space-x-2'>
