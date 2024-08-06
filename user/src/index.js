@@ -18,6 +18,7 @@ import TestPage from "./Pages/TestPage";
 import ResetPasswordPage from './Pages/ResetPasswordPage';
 import ResultPage from './Pages/ResultPage';
 import EditProfilePage from './Pages/EditProfilePage';
+import TestRanking from './Pages/TestRanking';
 import Ranking from './Pages/Ranking';
 import ResultsPageAnalysis from './Pages/ResultAnalysisPage';
 
@@ -37,7 +38,8 @@ root.render(
             <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
             <Route path="/password/reset/:token" element={<ResetPasswordPage/>}/>
             <Route path="/result/test/:test_id" element={<ResultPage />} />
-            <Route path="/ranking/test/:test_id" element={<Ranking/>}/>
+            <Route path="/ranking" element={<Ranking/>}/>
+            <Route path="/ranking/test/:test_id" element={<TestRanking/>}/>
             <Route path="/ranking/test/:test_id/analysis" element={<ResultsPageAnalysis/>}/>
             <Route element={<ProtectedRoute />}>
             <Route path="/quiz" element={<QuizPage />} />

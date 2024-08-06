@@ -21,7 +21,7 @@ const useAvailableTests = () => {
                 setAvailableTests(response.data.data);
                 console.log("Available Tests:", response.data.data);
             } catch (error) {
-                setError(error.message);
+                setError(error.message.response); // Error fixed Since User
             } finally {
                 setLoading(false);
             }

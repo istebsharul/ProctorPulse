@@ -80,7 +80,7 @@ const QuestionsPart = ({ data, setData }) => {
                   className='w-full border-1 rounded-lg p-2 focus:border-red-600 outline-none'
                   type="text"
                   value={opt}
-                  placeholder={`Options ${optIndex+1}`}
+                  placeholder={`Options ${optIndex}`}
                   onChange={(e) =>
                     handleOptionChange(index, optIndex, e.target.value)
                   }

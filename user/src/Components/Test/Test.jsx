@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { checkTestAttempted } from '../../Actions/testAction';
 import { toast } from 'react-hot-toast';
-import { BiEdit } from "react-icons/bi";
 
 function Test({ id, title, description, duration, dueDate }) {
   const [expired, setExpired] = useState(false);
@@ -48,13 +47,18 @@ function Test({ id, title, description, duration, dueDate }) {
   }
 
   return (
-    <div className={`w-[25rem] p-4 rounded-xl flex flex-col justify-between items-start ${expired ? 'bg-gray-500' : 'bg-purple-900'} hover:shadow-xl hover:bg-purple-700 transform transition-transform duration-300 hover:scale-105 text-white space-y-3`}
+    <div className={`w-[25rem] p-4 rounded-xl flex flex-col justify-between items-start ${expired ? 'bg-gray-500' : 'bg-purple-200'} hover:shadow-xl hover:bg-purple-300 transform transition-transform duration-300 hover:scale-105 text-black space-y-3`}
       onClick={handleTestClick}
     >
       <div className='w-full flex justify-between'>
         <div className='flex flex-col space-y-1'>
-          <h1 className='text-2xl'>{title}</h1>
-          <p className='text-xs'>{description}</p>
+          <div className='flex'>
+          <img className='w-1/6' src='https://res.cloudinary.com/dllddjxkf/image/upload/v1722886116/cky5d15ve0t6cslutknm.png' alt=""/>
+            <div className='px-2'>
+            <h1 className='text-2xl'>{title}</h1>
+            <p className='text-xs'>{description}</p>
+            </div>
+          </div>
         </div>
         <div className='flex flex-col space-y-1'>
           <div

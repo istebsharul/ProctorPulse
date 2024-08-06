@@ -17,7 +17,7 @@ const ResultPage = () => {
   const [totalQuestions, setTotalQuestions] = useState(0);
 
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log(test_id);
   })
 
@@ -29,7 +29,7 @@ const ResultPage = () => {
         const totalQuestions = attempted_questions + skipped_questions;
         setCorrectAnswers(total_score);
         setTotalQuestions(totalQuestions);
-        console.log(total_score,attempted_questions,skipped_questions,totalQuestions);
+        console.log(total_score, attempted_questions, skipped_questions, totalQuestions);
       } catch (error) {
         console.error('Error fetching test details:', error);
       }
@@ -51,21 +51,23 @@ const ResultPage = () => {
   };
 
   return (
-    <div className='w-full h-screen pt-40 flex flex-col items-center'>
-      <div className="w-3/6">
-      <h1 className="w-full text-black text-lg mb-4">Results</h1>
-      <div className="w-full flex flex-col justify-center items-center bg-purple-900 text-white rounded-lg shadow-md p-8 text-center">
-        <div className="text-6xl font-bold">{Math.round(percentage)}%</div>
-        <div className="text-xl mt-4">You Have Answered {correctAnswers} out of {totalQuestions} Correct</div>
-        <button
-          onClick={handleSeeMoreDetails}
-          className="w-fit mt-6 text-sm flex justify-center items-center bg-white text-black rounded-full px-6 py-2 shadow-md hover:bg-gray-100 transition duration-300"
-        >
-          See More Details
-          <SlArrowRight className='text-xs ml-2 font-bold'/>
-        </button>
+    <div className='w-full h-screen flex flex-col items-center mt-10'>
+      <div className="w-3/5">
+        <h1 className="text-xl text-purple-500 mb-6 flex items-center">
+          Result
+        </h1>
+        <div className="w-full flex flex-col justify-center items-center bg-purple-900 text-white rounded-lg shadow-md p-8 text-center">
+          <div className="text-6xl font-bold">{Math.round(percentage)}%</div>
+          <div className="text-xl mt-4">You Have Answered {correctAnswers} out of {totalQuestions} Correct</div>
+          <button
+            onClick={handleSeeMoreDetails}
+            className="w-fit mt-6 text-sm flex justify-center items-center bg-white text-black rounded-full px-6 py-2 shadow-md hover:bg-gray-100 transition duration-300"
+          >
+            See More Details
+            <SlArrowRight className='text-xs ml-2 font-bold' />
+          </button>
+        </div>
       </div>
-    </div>
     </div>
   );
 };

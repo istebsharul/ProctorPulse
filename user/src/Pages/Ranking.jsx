@@ -1,68 +1,46 @@
-import React, { useEffect, useState } from 'react';
-import Rank from '../Components/Rank';
-import { useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import axios from 'axios';
+import React from 'react';
+import useAvailableTests from '../Hooks/useAvailableTests';  // Make sure to update the import path
+import { useNavigate } from 'react-router-dom';
 
 function Ranking() {
-    const { test_id } = useParams();
-    const [rankData, setRankData] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const curr_user = useSelector((state) => state.auth.user);
+    const { availableTests, loading, error } = useAvailableTests();
+    const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchRanking = async () => {
-            if (!test_id) {
-                setError("TestId is missing in URL parameter");
-                setLoading(false);
-                return;
-            }
-            try {
-                const response = await axios.get(`http://localhost:3000/api/ranking/test/${test_id}`);
-                console.log(response.data.users);
-                setRankData(response.data.users);
-            } catch (error) {
-                console.log(JSON.stringify(error.response.data.message));
-                setError(error.response.data.message);
-            } finally {
-                setLoading(false);
-            }
-        };
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
-        fetchRanking();
-    }, [test_id]);
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
 
-    // Find the current user in the rank data
-    // const currentUserIndex = rankData.findIndex(user => user.user_id._id === curr_user._id);
-    // const current_user = currentUserIndex !== -1 ? rankData[currentUserIndex] : null;
-    // const current_user_rank = currentUserIndex !== -1 ? currentUserIndex + 1 : null;
-
-    const currentUserIndex = curr_user && curr_user._id 
-        ? rankData.findIndex(user => user.user_id && user.user_id._id === curr_user._id)
-        : -1;
-    const current_user = currentUserIndex !== -1 ? rankData[currentUserIndex] : null;
-    const current_user_rank = currentUserIndex !== -1 ? currentUserIndex + 1 : null;
-
+    const handleTestRank = (testId) => {
+        navigate(`/ranking/test/${testId}`);
+    };
 
     return (
-        <div className='flex flex-col justify-center items-center mt-20'>
-            <h1 className='text-xl py-5'>Ranking</h1>
-            <div className='w-3/5 bg-purple-100 rounded-xl p-10 space-y-2'>
-                <div>
-                    { current_user &&
-                        <Rank user={current_user} testId={test_id} rank={current_user_rank} />
-                    }
-                </div>
-                {loading && <div>Loading...</div>}
-                {error && <div>Error: {error}</div>}
-                {!loading && !error && rankData.length > 0 ? (
-                    rankData.map((user, index) => (
-                        <Rank key={index} user={user} rank={index + 1} />
-                    ))
-                ) : (
-                    !loading && !error && <div>No ranking data available.</div>
-                )}
+        <div className='w-full flex justify-center items-center mt-10'>
+            <div className='md:w-3/5 w-4/5'>
+                <h1 className="text-xl mb-6">Ranking</h1>
+                <ul className='bg-purple-100 rounded-xl p-10 space-y-2 flex flex-wrap'>
+                    {availableTests.length > 0 ? (
+                        availableTests.map(test => (
+                            <li key={test._id} onClick={() => handleTestRank(test._id)} className="md:w-40 w-full md:h-40 h-full bg-purple-300 p-2 m-2 rounded-xl shadow hover:shadow-lg flex flex-col justify-center items-center cursor-pointer">
+                                <img className='md:w-2/4 w-full md:m-2' src="https://res.cloudinary.com/dllddjxkf/image/upload/v1722891157/hpqsok3wub8khlpt2hgc.webp" alt={test.name} />
+                                <div className='w-full flex flex-col justify-center items-center'>
+                                    <p className='text-lg'>
+                                        {test.name}
+                                    </p>
+                                    <p className='text-sm'>
+                                        Total Respones: {test.users.length}
+                                    </p>
+                                </div>
+                            </li>
+                        ))
+                    ) : (
+                        <li>No available tests</li>
+                    )}
+                </ul>
             </div>
         </div>
     );

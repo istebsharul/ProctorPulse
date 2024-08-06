@@ -80,14 +80,14 @@ const ResultsPageAnalysis = () => {
   }
 
   return (
-    <div className="w-full p-10 flex justify-center">
+    <div className="w-full mt-10 flex justify-center">
       <div className='w-3/5'>
-        <h1 className="text-xl mb-6 flex items-center">
+        <h1 className="text-xl text-purple-500 mb-6 flex items-center">
           <span
-            className="text-purple-500 cursor-pointer"
+            className="text-black cursor-pointer"
             onClick={() => navigate(`/result/test/${test_id}`)}
           >
-            Results
+            Result
           </span>
           <IoIosArrowForward />
           Details
@@ -104,7 +104,7 @@ const ResultsPageAnalysis = () => {
                   question={`Q${questionIndex + 1}. ${question.title}`}
                   options={question.options}
                   selectedOption={parseInt(response.user_answer)}
-                  correctOption={question.correct_answer}
+                  correctOption={parseInt(question.correct_answer)}
                 />
               );
             })}

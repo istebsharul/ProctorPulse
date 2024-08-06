@@ -221,6 +221,19 @@ exports.getTestDetails = asyncErrors(async (req, res, next) => {
             _id: testId,
             users: { $in: [userId] },
         });
+
+        if (testDetails) {
+            // User is already in the test
+            console.log('User is already in the test.');
+        } else {
+            // User is not in the test, so we need to add them
+            await Test.updateOne(
+                { _id: testId },
+                { $addToSet: { users: userId } } // $addToSet ensures the userId is added only if it doesn't already exist
+            );
+            console.log('User added to the test.');
+        }
+
         logger.info(testDetails);
         const data = await formattedTestDetails(testDetails);
         response = new ApiResponse(200, data);
@@ -468,7 +481,7 @@ exports.submitTest = asyncErrors(async (req, res, next) => {
             return res.status(400).json(response);
         }
 
-
+        console.log(answers);
 
         // Process submitted answers
         let totalScore = 0;
@@ -580,12 +593,17 @@ exports.getUserTestSubmitDetails = asyncErrors(async (req, res, next) => {
             return res.status(400).json(response);
         }
 
-        if (test.password !== passWord) {
-            const message = `Incorrect password for testId ${testId}.`;
-            logger.error(message);
-            const response = new ApiResponse(401, null, message); // Unauthorized status code
-            return res.status(401).json(response);
-        }
+        console.log("Pass",test.password);
+        console.log("CPass",passWord);
+
+        // if (test.password !== passWord) {
+        //     console.log("Test Password from test Schema",test.password);
+        //     console.log("Password from Client Side",passWord);
+        //     const message = `Incorrect password for testId ${testId}.`;
+        //     logger.error(message);
+        //     const response = new ApiResponse(401, null, message); // Unauthorized status code
+        //     return res.status(401).json(response);
+        // }
 
         // Fetch the user's test submission details
         const userTestSubmitDetails = await UserTestAttempt.findOne({
