@@ -23,7 +23,7 @@ function Home() {
 
 
   return (
-    <div className='flex flex-col justify-center items-center pt-40'>
+    <div className='w-full flex flex-col justify-center items-center pt-40'>
       <JoinTestButton/>
       <h1 className="text-xl text-center py-10">Assigned Test</h1>
       {!loading && !error && <AvailableTest tests={availableTests} />}

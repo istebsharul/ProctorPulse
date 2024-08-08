@@ -24,7 +24,7 @@ function JoinTestButton() {
     };
 
     return (
-        <div className='w-3/5 flex flex-col h-full py-10 flex justify-center items-center space-y-4 bg-purple-900 rounded-2xl'>
+        <div className='md:w-3/5 w-4/5 flex flex-col h-full py-10 flex justify-center items-center space-y-4 bg-purple-900 rounded-2xl'>
             <h1 className='text-center text-white text-2xl'>Join Test</h1>
             <div className="w-full flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4">
                 <input
@@ -32,14 +32,14 @@ function JoinTestButton() {
                     value={testId}
                     onChange={(e) => setTestId(e.target.value)}
                     placeholder="Test ID"
-                    className="md:w-2/5 bg-white text-black px-4 py-2 font-Poppins text-md rounded-lg shadow-inner-md"
+                    className="md:w-2/5 w-4/5 bg-white text-black px-4 py-2 font-Poppins text-md rounded-lg shadow-inner-md"
                 />
                 <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Password"
-                    className="md:w-2/5 bg-white text-black px-4 py-2 font-Poppins text-md rounded-lg shadow-inner-md"
+                    className="md:w-2/5 w-4/5 bg-white text-black px-4 py-2 font-Poppins text-md rounded-lg shadow-inner-md"
                 />
             </div>
             <button

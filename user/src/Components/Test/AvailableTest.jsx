@@ -17,8 +17,8 @@ function AvailableTest({ tests = [] }) { // Ensure tests defaults to an empty ar
 
 
   return (
-    <div className='w-full flex justify-center items-center'>
-      <div className='w-2/3 px-4 flex flex-wrap justify-center items-center gap-4'>
+    <div className='md:w-full flex justify-center items-center'>
+      <div className='md:w-2/3 w-4/5 px-4 flex flex-wrap justify-center items-center gap-4'>
         {Array.isArray(activeTests) && activeTests.length > 0 ? (
           activeTests.map((test, index) => {
             // Convert expiryDate to a Date object if it exists

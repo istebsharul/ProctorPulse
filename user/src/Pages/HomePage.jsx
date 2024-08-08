@@ -3,7 +3,7 @@ import Home from '../Components/Home'
 
 function HomePage() {
   return (
-    <div>
+    <div className='w-full'>
         <Home/>
     </div>
   )
