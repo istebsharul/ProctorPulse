@@ -73,8 +73,8 @@ const QuestionsPart = ({ data, setData }) => {
                   type="radio"
                   className='md:mx-2'
                   // name={`correct_answer-${index}`}
-                  checked={q.correct_answer === optIndex + 1}
-                  onChange={() => handleCorrectOptionChange(index, optIndex + 1)}
+                  checked={q.correct_answer === optIndex}
+                  onChange={() => handleCorrectOptionChange(index, optIndex)}
                 />
                 <input
                   className='w-full border-1 rounded-lg p-2 focus:border-red-600 outline-none'

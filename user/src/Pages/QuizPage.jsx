@@ -117,6 +117,7 @@ const QuizPage = () => {
     const handleTestEnd = async () => {
         alert('The test has ended!');
         // setShowEndDisclaimer(true);
+        console.log(selectedOptions);
         try {
             const response = await axios.post(`/api/user/${userId}/test/${testId}/submit`, { answers: selectedOptions, user_name, user_imageUrl });
             console.log(`selected options: ${JSON.stringify(selectedOptions)}`);
